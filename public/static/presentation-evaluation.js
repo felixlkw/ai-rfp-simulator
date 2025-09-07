@@ -28,9 +28,19 @@ class PresentationEvaluationApp {
   }
 
   init() {
+    console.log('PresentationEvaluationApp init() 시작')
     this.setupEventListeners()
     this.loadCustomers()
     this.setupSpeechRecognition()
+    console.log('PresentationEvaluationApp init() 완료')
+    
+    // 초기화 완료 후 즉시 데모 테스트 (개발용)
+    if (window.location.search.includes('autotest=true')) {
+      setTimeout(() => {
+        console.log('자동 데모 테스트 실행')
+        this.runDemoEvaluation()
+      }, 3000)
+    }
   }
 
   setupEventListeners() {
@@ -55,6 +65,11 @@ class PresentationEvaluationApp {
 
     // 데모 평가
     document.getElementById('demo-presentation-eval')?.addEventListener('click', () => {
+      this.runDemoEvaluation()
+    })
+
+    // 추가 데모 평가 버튼
+    document.getElementById('demo-presentation-eval-alt')?.addEventListener('click', () => {
       this.runDemoEvaluation()
     })
   }
@@ -109,13 +124,22 @@ class PresentationEvaluationApp {
 
   async requestMediaAccess() {
     try {
+      console.log('미디어 접근 요청 시작')
       this.showLoading('카메라와 마이크에 접근 중...')
 
+      // 브라우저 지원 체크
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('이 브라우저는 미디어 접근을 지원하지 않습니다.')
+      }
+
+      console.log('getUserMedia 호출')
       // 미디어 스트림 요청
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
       })
+      
+      console.log('미디어 스트림 획득 성공:', stream)
 
       this.mediaStream = stream
       
@@ -189,11 +213,11 @@ class PresentationEvaluationApp {
       
       // 색상 변경 (낮음: 빨강, 중간: 노랑, 높음: 초록)
       if (level < 20) {
-        audioLevelBar.className = 'bg-red-500 h-3 rounded-full transition-all duration-100'
+        audioLevelBar.style.background = 'var(--pwc-error)'
       } else if (level < 50) {
-        audioLevelBar.className = 'bg-yellow-500 h-3 rounded-full transition-all duration-100'
+        audioLevelBar.style.background = 'var(--pwc-warning)'
       } else {
-        audioLevelBar.className = 'bg-green-500 h-3 rounded-full transition-all duration-100'
+        audioLevelBar.style.background = 'var(--pwc-success)'
       }
     }
     
@@ -204,6 +228,7 @@ class PresentationEvaluationApp {
   setupSpeechRecognition() {
     // Web Speech API 설정
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      console.log('Web Speech API 사용 가능')
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
       this.recognition = new SpeechRecognition()
       
@@ -220,7 +245,7 @@ class PresentationEvaluationApp {
           
           if (event.results[i].isFinal) {
             finalTranscript += transcript + ' '
-            this.analyzeSpecch(transcript)
+            this.analyzeSpeech(transcript)
           } else {
             interimTranscript += transcript
           }
@@ -232,13 +257,29 @@ class PresentationEvaluationApp {
       
       this.recognition.onerror = (event) => {
         console.error('STT 오류:', event.error)
+        if (event.error === 'not-allowed') {
+          alert('마이크 권한이 거부되었습니다. 브라우저 설정에서 마이크 접근을 허용해주세요.')
+        } else if (event.error === 'no-speech') {
+          console.log('음성이 감지되지 않았습니다.')
+        } else if (event.error === 'network') {
+          console.error('네트워크 오류로 음성 인식에 실패했습니다.')
+        }
+      }
+      
+      this.recognition.onstart = () => {
+        console.log('음성 인식이 시작되었습니다.')
+      }
+      
+      this.recognition.onend = () => {
+        console.log('음성 인식이 종료되었습니다.')
       }
     } else {
       console.warn('Web Speech API가 지원되지 않습니다.')
+      alert('이 브라우저는 음성 인식을 지원하지 않습니다. Chrome, Safari, Edge를 사용해주세요.')
     }
   }
 
-  analyzeSpecch(transcript) {
+  analyzeSpeech(transcript) {
     // 단어 수 계산
     const words = transcript.trim().split(/\s+/).filter(word => word.length > 0)
     this.speechMetrics.wordCount += words.length
@@ -279,17 +320,34 @@ class PresentationEvaluationApp {
   }
 
   startRecording() {
+    console.log('녹화 시작 시도')
     if (!this.mediaStream) {
+      console.error('미디어 스트림이 없습니다.')
       alert('먼저 카메라와 마이크를 연결해주세요.')
       return
     }
+    
+    console.log('미디어 스트림 상태:', this.mediaStream.active)
 
     try {
-      // MediaRecorder 설정
-      this.mediaRecorder = new MediaRecorder(this.mediaStream, {
-        mimeType: 'video/webm;codecs=vp9,opus'
-      })
+      // MediaRecorder 설정 - 브라우저 호환성 체크
+      let mimeType = 'video/webm;codecs=vp9,opus'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/webm;codecs=vp8,opus'
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'video/webm'
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = '' // 기본값 사용
+          }
+        }
+      }
       
+      console.log('사용할 mimeType:', mimeType)
+      this.mediaRecorder = new MediaRecorder(this.mediaStream, 
+        mimeType ? { mimeType: mimeType } : undefined
+      )
+      
+      console.log('MediaRecorder 생성 성공:', this.mediaRecorder.state)
       this.recordedChunks = []
       
       this.mediaRecorder.ondataavailable = (event) => {
@@ -303,15 +361,25 @@ class PresentationEvaluationApp {
       }
       
       // 녹화 시작
+      console.log('MediaRecorder 시작')
       this.mediaRecorder.start(1000) // 1초마다 데이터 수집
       this.isRecording = true
       this.recordingStartTime = Date.now()
       this.speechMetrics.startTime = Date.now()
       
+      console.log('녹화 시작됨 - 상태:', this.mediaRecorder.state)
+      
       // STT 시작
       if (this.recognition) {
+        console.log('STT 시작')
         this.sttText = ''
-        this.recognition.start()
+        try {
+          this.recognition.start()
+        } catch (error) {
+          console.error('STT 시작 오류:', error)
+        }
+      } else {
+        console.warn('STT가 설정되지 않았습니다.')
       }
       
       // UI 업데이트
@@ -603,9 +671,35 @@ window.addEventListener('beforeunload', () => {
   }
 })
 
+// 디버깅을 위한 테스트 함수
+window.testDemo = function() {
+  console.log('테스트 함수 호출됨')
+  if (window.presentationApp) {
+    console.log('presentationApp 존재함')
+    window.presentationApp.runDemoEvaluation()
+  } else {
+    console.error('presentationApp이 존재하지 않음')
+  }
+}
+
+// 20초 후 자동 테스트 (개발용)
+setTimeout(() => {
+  console.log('20초 경과 - 자동 데모 테스트 시도')
+  if (window.location.search.includes('autotest=true')) {
+    console.log('autotest 파라미터 감지됨, 데모 실행')
+    window.testDemo()
+  }
+}, 20000)
+
 // 앱 초기화
 let presentationApp
 document.addEventListener('DOMContentLoaded', () => {
-  presentationApp = new PresentationEvaluationApp()
-  window.presentationApp = presentationApp
+  console.log('PresentationEvaluationApp 초기화 시작')
+  try {
+    presentationApp = new PresentationEvaluationApp()
+    window.presentationApp = presentationApp
+    console.log('PresentationEvaluationApp 초기화 완료')
+  } catch (error) {
+    console.error('PresentationEvaluationApp 초기화 오류:', error)
+  }
 })

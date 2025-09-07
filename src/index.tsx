@@ -1668,7 +1668,7 @@ app.get('/presentation-evaluation', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/presentation-evaluation.js?v=2.0"></script>
+        <script src="/static/presentation-evaluation.js?v=3.0"></script>
     </body>
     </html>
   `)
