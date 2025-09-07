@@ -112,7 +112,7 @@ class PersonaManager {
                 if (!value) params.delete(key);
             }
 
-            const response = await axios.get(`/api/personas?${params}`);
+            const response = await axios.get(`/api/customers?${params}`);
             
             if (response.data.success) {
                 this.personas = response.data.data;
@@ -280,7 +280,7 @@ class PersonaManager {
 
     async setupCompanyFilter() {
         try {
-            const response = await axios.get('/api/personas/stats/by-company');
+            const response = await axios.get('/api/customers');
             if (response.data.success) {
                 const companies = response.data.data.map(stat => stat.company);
                 const select = document.getElementById('company-filter');
@@ -335,7 +335,7 @@ class PersonaManager {
 
     async loadPersonaForEdit(personaId) {
         try {
-            const response = await axios.get(`/api/personas/${personaId}`);
+            const response = await axios.get(`/api/customers/${personaId}`);
             if (response.data.success) {
                 const persona = response.data.data;
                 const form = document.getElementById('persona-form');
@@ -374,9 +374,9 @@ class PersonaManager {
 
             let response;
             if (this.currentPersona) {
-                response = await axios.put(`/api/personas/${this.currentPersona}`, data);
+                response = await axios.put(`/api/customers/${this.currentPersona}`, data);
             } else {
-                response = await axios.post('/api/personas', data);
+                response = await axios.post('/api/customers', data);
             }
 
             if (response.data.success) {
@@ -405,7 +405,7 @@ class PersonaManager {
         if (!confirm('이 페르소나를 삭제하시겠습니까?')) return;
 
         try {
-            const response = await axios.delete(`/api/personas/${personaId}`);
+            const response = await axios.delete(`/api/customers/${personaId}`);
             if (response.data.success) {
                 this.showSuccess('페르소나가 삭제되었습니다.');
                 this.loadPersonas();

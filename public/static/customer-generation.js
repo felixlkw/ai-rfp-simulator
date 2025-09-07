@@ -41,6 +41,11 @@ class CustomerGenerationApp {
       this.generateCustomer()
     })
 
+    // 데모 가상고객 생성 버튼
+    document.getElementById('demo-generate-customer')?.addEventListener('click', () => {
+      this.loadDemoCustomerGeneration()
+    })
+
     // 드래그 앤 드롭 지원
     this.setupDragDrop()
   }
@@ -154,10 +159,10 @@ class CustomerGenerationApp {
       const fileType = file.type.includes('pdf') ? 'pdf' : 
                      file.type.includes('wordprocessing') ? 'docx' : 'txt'
 
-      const response = await axios.post('/api/customers/rfp-analysis', {
-        file_path: file.name,
-        file_type: fileType,
-        parsing_mode: 'auto'
+      const response = await axios.post('/api/customers/rfp-analysis', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
 
       if (response.data.success) {
@@ -580,6 +585,75 @@ class CustomerGenerationApp {
     
     // 고객 ID를 URL 파라미터로 전달
     window.location.href = `/proposal-evaluation?customer_id=${this.generatedCustomer.id}`
+  }
+
+  async loadDemoCustomerGeneration() {
+    try {
+      this.showLoading('AI 가상고객 생성 데모 로딩 중...')
+      
+      // 1단계: 데모 딥리서치 데이터 자동 로드
+      const deepResearchResponse = await axios.get('/api/demo/deep-research')
+      if (deepResearchResponse.data.success) {
+        this.deepResearchData = deepResearchResponse.data.data
+        this.displayResearchResults()
+        
+        // 회사명 자동 입력
+        const companyNameInput = document.getElementById('company-name')
+        if (companyNameInput) {
+          companyNameInput.value = '금고석유화학'
+        }
+      }
+
+      // 1초 대기 (사용자 경험)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // 2단계: 데모 RFP 분석 데이터 자동 로드
+      const rfpResponse = await axios.get('/api/demo/rfp-analysis')
+      if (rfpResponse.data.success) {
+        this.rfpAnalysisData = rfpResponse.data.data
+        this.displayRfpResults()
+      }
+
+      // 1초 대기 (사용자 경험)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // 3단계: AI 가상고객 생성
+      const customerResponse = await axios.post('/api/demo/generate-customer', {
+        company_name: '금고석유화학',
+        project_type: 'ERP-MES-ESG 통합 DX 플랫폼'
+      })
+
+      if (customerResponse.data.success) {
+        this.generatedCustomer = customerResponse.data.customer || customerResponse.data.data
+        this.displayGeneratedCustomer()
+        this.currentStep = 3
+        this.updateProgressBar()
+        
+        // 성공 메시지
+        this.showSuccessMessage('🎉 AI 가상고객 생성 데모가 완료되었습니다! 이제 제안서 평가로 이동할 수 있습니다.')
+        
+        // 자동으로 다음 단계 버튼 활성화
+        this.showNextStepButton()
+      }
+
+      this.hideLoading()
+    } catch (error) {
+      console.error('데모 가상고객 생성 오류:', error)
+      this.hideLoading()
+      this.showErrorMessage('데모 AI 가상고객 생성 중 오류가 발생했습니다: ' + error.message)
+    }
+  }
+
+  showNextStepButton() {
+    // 다음 단계 이동 버튼 표시
+    const customerSection = document.getElementById('generated-customer')
+    if (customerSection) {
+      const nextButton = customerSection.querySelector('.pwc-text-center button')
+      if (nextButton) {
+        nextButton.style.display = 'inline-flex'
+        nextButton.style.animation = 'pulse 2s infinite'
+      }
+    }
   }
 }
 

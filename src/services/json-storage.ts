@@ -24,8 +24,8 @@ export class JsonStorageService {
    * AI 가상고객 저장
    */
   async saveVirtualCustomer(customer: AIVirtualCustomer): Promise<string> {
-    const customerId = customer.customer_id || crypto.randomUUID()
-    const customerWithId = { ...customer, customer_id: customerId }
+    const customerId = customer.id || customer.customer_id || crypto.randomUUID()
+    const customerWithId = { ...customer, id: customerId, customer_id: customerId }
     
     const key = `customer:${customerId}`
     const data = {
@@ -615,34 +615,7 @@ export class JsonStorageService {
     }
   }
 
-  /**
-   * 세션 조회
-   */
-  async getEvaluationSession(sessionId: string): Promise<EvaluationSession | null> {
-    const key = `session:${sessionId}`
-    
-    try {
-      // 로컬 캐시 확인
-      if (this.localCache.has(key)) {
-        return this.localCache.get(key)
-      }
-      
-      // KV 스토리지에서 조회
-      if (this.kvNamespace) {
-        const data = await this.kvNamespace.get(key, 'json')
-        if (data) {
-          this.localCache.set(key, data) // 캐시에 저장
-          return data as EvaluationSession
-        }
-      }
-      
-      return null
-      
-    } catch (error) {
-      console.error('세션 조회 실패:', error)
-      return null
-    }
-  }
+
 
   /**
    * 모든 세션 조회
