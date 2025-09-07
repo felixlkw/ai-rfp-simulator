@@ -144,14 +144,20 @@ class PresentationEvaluationApp {
   async requestMediaAccess() {
     try {
       console.log('미디어 접근 요청 시작')
-      this.showLoading('카메라와 마이크에 접근 중...')
+      this.showLoading('카메라와 마이크 권한 요청 중...<br><br>🔒 <strong>브라우저 상단에 권한 팝업이 나타나면 "허용"을 클릭해주세요</strong>')
 
       // 브라우저 지원 체크
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('이 브라우저는 미디어 접근을 지원하지 않습니다.')
+        throw new Error('이 브라우저는 WebRTC 미디어 접근을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.')
       }
 
-      console.log('getUserMedia 호출')
+      console.log('getUserMedia 호출 - 권한 요청')
+      
+      // 단계별 안내 메시지 업데이트
+      setTimeout(() => {
+        this.showLoading('브라우저 권한 대기 중...<br><br>📋 <strong>팝업이 보이지 않으면:</strong><br>1. 브라우저 주소창 옆 카메라 아이콘 클릭<br>2. "허용"으로 설정 변경<br>3. 페이지 새로고침')
+      }, 2000)
+      
       // 미디어 스트림 요청
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -188,7 +194,7 @@ class PresentationEvaluationApp {
       }
 
       this.hideLoading()
-      this.showSuccessMessage('카메라와 마이크가 성공적으로 연결되었습니다!')
+      this.showSuccessMessage('✅ 카메라와 마이크 연결 성공!<br><br>🎯 이제 "녹화 시작" 버튼을 클릭하여 발표를 시작하세요.<br>📝 실시간 STT로 음성이 텍스트로 변환됩니다.')
 
     } catch (error) {
       console.error('미디어 접근 오류:', error)
@@ -340,7 +346,30 @@ class PresentationEvaluationApp {
   updateSTTDisplay(text) {
     const sttTextElement = document.getElementById('stt-text')
     if (sttTextElement) {
-      sttTextElement.textContent = text || '음성을 인식하고 있습니다...'
+      const displayText = text || '음성을 인식하고 있습니다...'
+      
+      // 실시간 타이핑 효과
+      sttTextElement.style.background = 'linear-gradient(90deg, var(--pwc-orange), var(--pwc-blue))'
+      sttTextElement.style.backgroundSize = '200% 100%'
+      sttTextElement.style.animation = 'gradient 2s ease infinite'
+      sttTextElement.style.backgroundClip = 'text'
+      sttTextElement.style.webkitBackgroundClip = 'text'
+      sttTextElement.style.color = 'transparent'
+      
+      setTimeout(() => {
+        sttTextElement.style.background = 'none'
+        sttTextElement.style.color = 'var(--pwc-navy)'
+        sttTextElement.style.animation = 'none'
+      }, 1000)
+      
+      sttTextElement.textContent = displayText
+      
+      // STT 섹션이 숨겨져 있다면 표시
+      const sttSection = document.getElementById('stt-section')
+      if (sttSection && sttSection.classList.contains('hidden')) {
+        sttSection.classList.remove('hidden')
+        sttSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
     }
   }
 
@@ -633,7 +662,7 @@ class PresentationEvaluationApp {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -642,18 +671,19 @@ class PresentationEvaluationApp {
     overlay.innerHTML = `
       <div style="
         background: var(--pwc-white);
-        border-radius: var(--border-radius-lg);
-        padding: var(--spacing-xl);
-        box-shadow: var(--shadow-xl);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-2xl);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         border: 3px solid var(--pwc-blue);
-        max-width: 400px;
+        max-width: 500px;
         width: 90%;
+        text-align: center;
       ">
-        <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
-          <i class="fas fa-spinner fa-spin" style="color: var(--pwc-blue); font-size: 1.5rem;"></i>
-          <span style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">${message}</span>
+        <div style="margin-bottom: var(--spacing-xl);">
+          <i class="fas fa-spinner fa-spin" style="color: var(--pwc-blue); font-size: 2rem; margin-bottom: var(--spacing-md);"></i>
+          <div style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); line-height: 1.6; word-break: keep-all;">${message}</div>
         </div>
-        <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+        <div style="width: 100%; height: 8px; background: var(--pwc-gray-200); border-radius: 4px; overflow: hidden;">
           <div style="height: 100%; background: linear-gradient(90deg, var(--pwc-blue), var(--pwc-orange)); border-radius: 4px; width: 70%; animation: pulse 1.5s ease-in-out infinite;"></div>
         </div>
       </div>
@@ -674,21 +704,22 @@ class PresentationEvaluationApp {
       position: fixed;
       top: var(--spacing-lg);
       right: var(--spacing-lg);
-      background: linear-gradient(135deg, var(--success-color), var(--pwc-success));
+      background: linear-gradient(135deg, var(--pwc-success), var(--pwc-success-dark));
       color: var(--pwc-white);
-      padding: var(--spacing-lg);
-      border-radius: var(--border-radius-md);
-      box-shadow: var(--shadow-lg);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
       z-index: 9999;
-      transition: opacity 0.3s ease;
-      border: 2px solid var(--success-color-light);
-      max-width: 400px;
+      transition: all 0.3s ease;
+      border: 2px solid var(--pwc-success);
+      max-width: 450px;
       word-break: keep-all;
+      line-height: 1.5;
     `
     successDiv.innerHTML = `
-      <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-        <i class="fas fa-check-circle" style="font-size: 1.25rem;"></i>
-        <span style="font-weight: 600;">${message}</span>
+      <div style="text-align: center;">
+        <i class="fas fa-check-circle" style="font-size: 1.5rem; margin-bottom: var(--spacing-sm);"></i>
+        <div style="font-weight: 600; font-size: 1rem;">${message}</div>
       </div>
     `
     

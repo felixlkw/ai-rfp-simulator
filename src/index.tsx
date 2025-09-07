@@ -1501,8 +1501,27 @@ app.get('/presentation-evaluation', (c) => {
                 <!-- 미디어 접근 권한 요청 -->
                 <div id="media-setup" class="pwc-text-center" style="padding: var(--spacing-3xl) 0;">
                     <i class="fas fa-video-camera" style="font-size: 4rem; color: var(--pwc-gray-400); margin-bottom: var(--spacing-xl);"></i>
-                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); word-break: keep-all;">발표 녹화를 위해 미디어 권한이 필요합니다</h3>
-                    <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-xl); word-break: keep-all;">카메라와 마이크 접근을 허용해주세요. WebRTC를 통해 실시간 녹화와 STT 분석을 진행합니다.</p>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); word-break: keep-all;">실시간 발표 녹화 및 STT 분석</h3>
+                    <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-lg); word-break: keep-all;">WebRTC 기술로 발표를 실시간 녹화하고 음성을 텍스트로 변환하여 AI 평가를 진행합니다.</p>
+                    
+                    <!-- 단계별 프로세스 안내 -->
+                    <div style="background: var(--pwc-gray-50); border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-xl); text-align: left;">
+                        <h4 style="color: var(--pwc-navy); font-weight: 600; margin-bottom: var(--spacing-md);"><i class="fas fa-list-ol" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>진행 단계</h4>
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <span style="background: var(--pwc-blue); color: var(--pwc-white); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">1</span>
+                                <span style="color: var(--pwc-gray-700); word-break: keep-all;">카메라/마이크 시작 버튼 클릭</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <span style="background: var(--pwc-orange); color: var(--pwc-white); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">2</span>
+                                <span style="color: var(--pwc-gray-700); word-break: keep-all;">브라우저 권한 요청 팝업에서 "허용" 클릭</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <span style="background: var(--pwc-success); color: var(--pwc-white); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">3</span>
+                                <span style="color: var(--pwc-gray-700); word-break: keep-all;">비디오 프리뷰 확인 후 녹화 시작</span>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
                         <div style="text-align: center;">
@@ -1599,23 +1618,23 @@ app.get('/presentation-evaluation', (c) => {
                     </h2>
                 </div>
                 <div class="pwc-card-content">
-                    <div style="background: var(--neutral-50); border: 2px solid var(--neutral-200); border-radius: var(--border-radius-md); padding: var(--spacing-lg); min-height: 120px; margin-bottom: var(--spacing-lg);">
-                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: var(--spacing-sm); font-weight: 500;">인식된 텍스트:</div>
-                        <div id="stt-text" style="color: var(--text-color); line-height: 1.6; font-family: var(--font-mono); font-size: 0.95rem; word-break: keep-all; word-wrap: break-word;">
+                    <div style="background: var(--pwc-gray-50); border: 2px solid var(--pwc-gray-200); border-radius: var(--radius-md); padding: var(--spacing-lg); min-height: 120px; margin-bottom: var(--spacing-lg);">
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); margin-bottom: var(--spacing-sm); font-weight: 500;">인식된 텍스트:</div>
+                        <div id="stt-text" style="color: var(--pwc-navy); line-height: 1.6; font-family: monospace; font-size: 0.95rem; word-break: keep-all; word-wrap: break-word;">
                             음성 인식을 시작하려면 녹화를 시작하세요...
                         </div>
                     </div>
 
                     <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-md);">
-                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-navy)); border-radius: var(--radius-md); color: var(--pwc-white);">
                             <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">말속도</div>
                             <div id="speech-speed" style="font-size: 1.25rem; font-weight: 700;">- WPM</div>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--success-color-light), var(--success-color)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-success), var(--pwc-success-dark)); border-radius: var(--radius-md); color: var(--pwc-white);">
                             <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">휴지 빈도</div>
                             <div id="pause-frequency" style="font-size: 1.25rem; font-weight: 700;">- 회/분</div>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-orange-light), var(--pwc-orange)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-dark)); border-radius: var(--radius-md); color: var(--pwc-white);">
                             <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">군더더기어</div>
                             <div id="filler-words" style="font-size: 1.25rem; font-weight: 700;">- 개</div>
                         </div>
