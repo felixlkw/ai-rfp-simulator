@@ -11,6 +11,11 @@ import { DatabaseService } from './services/database'
 import { DemoDataService } from './services/demo-data'
 import { FileParserService } from './services/file-parser'
 import { PDFGeneratorService } from './services/pdf-generator'
+import { OpenAIService } from './services/openai-service'
+import { WebCrawlerService } from './services/web-crawler'
+import { PdfParserService } from './services/pdf-parser-service'
+import { JsonStorageService } from './services/json-storage'
+import { LLMEvaluationService } from './services/llm-evaluation-service'
 
 // 타입 임포트
 import type { 
@@ -23,6 +28,8 @@ import type {
 
 type Bindings = {
   DB: D1Database;
+  KV: KVNamespace;
+  OPENAI_API_KEY: string;
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -32,6 +39,76 @@ app.use('/api/*', cors())
 
 // 정적 파일 서빙
 app.use('/static/*', serveStatic({ root: './public' }))
+
+// === 헬퍼 함수들 ===
+
+// 기본 RFP 분석 (텍스트 기반 키워드 매칭)
+async function generateBasicRfpAnalysis(text: string, fileName: string) {
+  const keywords = {
+    project_name: ['\ud504\ub85c\uc81d\ud2b8', '\uc0ac\uc5c5', '\uacfc\uc81c', '\uc9c0\uc6d0', '\uacfc\uc81c\uba85'],
+    budget_range: ['\uc608\uc0b0', '\ube44\uc6a9', '\uae08\uc561', '\uc6d0', '\ub9cc\uc6d0'],
+    timeline: ['\uae30\uac04', '\uc77c\uc815', '\uc644\ub8cc', '\uc885\ub8cc', '\uac1c\uc2dc', '\uc2dc\uc791'],
+    requirements: ['\uc694\uad6c\uc0ac\ud56d', '\uc694\uad6c', '\ud544\uc218', '\ud544\uc694', '\uc911\uc694'],
+    deliverables: ['\uc0b0\ucd9c\ubb3c', '\uc81c\ucd9c\ubb3c', '\uacb0\uacfc\ubb3c', '\ubcf4\uace0\uc11c', '\ubb38\uc11c'],
+    technology: ['\uae30\uc220', '\uc2dc\uc2a4\ud15c', '\ub124\ud2b8\uc6cc\ud06c', 'IT', '\ub514\uc9c0\ud138'],
+    qualification: ['\uc790\uaca9', '\uacbd\ud5d8', '\ub2a5\ub825', '\uc804\ubb38\uc131', '\uc778\uc99d']
+  }
+
+  const result: any = {
+    project_name: '\ubbf8\uc9c0\uc815 \ud504\ub85c\uc81d\ud2b8',
+    budget_range: '\ubbf8\uc9c0\uc815',
+    timeline: '\ubbf8\uc9c0\uc815',
+    requirements: [],
+    deliverables: [],
+    technology_stack: [],
+    qualification_criteria: [],
+    evaluation_criteria: [],
+    company_info: {
+      name: '\ubbf8\uc9c0\uc815 \uae30\uc5c5',
+      industry: '\ubbf8\uc9c0\uc815',
+      size: '\ubbf8\uc9c0\uc815'
+    },
+    project_scope: '\ubbf8\uc9c0\uc815',
+    success_factors: [],
+    constraints: [],
+    stakeholders: [],
+    risk_factors: [],
+    innovation_level: '\ubcf4\ud1b5'
+  }
+
+  // 간\ub2e8\ud55c 키\uc6cc\ub4dc \ub9e4\uce6d \ub85c\uc9c1
+  const lines = text.split('\n')
+  
+  for (const line of lines) {
+    // \ud504\ub85c\uc81d\ud2b8\uba85 \ucd94\ucd9c
+    if (keywords.project_name.some(k => line.includes(k)) && line.length < 100) {
+      result.project_name = line.trim() || result.project_name
+    }
+    
+    // \uc608\uc0b0 \uc815\ubcf4 \ucd94\ucd9c
+    if (keywords.budget_range.some(k => line.includes(k))) {
+      const budgetMatch = line.match(/([0-9,]+)\s*\ub9cc?\uc6d0/)
+      if (budgetMatch) {
+        result.budget_range = budgetMatch[0]
+      }
+    }
+    
+    // \uae30\uac04 \uc815\ubcf4
+    if (keywords.timeline.some(k => line.includes(k))) {
+      const timeMatch = line.match(/([0-9]+)\s*\uac1c\uc6d4|([0-9]+)\s*\uc8fc|([0-9]+)\s*\uc77c/)
+      if (timeMatch) {
+        result.timeline = timeMatch[0]
+      }
+    }
+  }
+
+  // \uae30\ubcf8 \uc694\uad6c\uc0ac\ud56d \ucd94\uac00
+  result.requirements = ['\uae30\uc220 \uc804\ubb38\uc131', '\ud504\ub85c\uc81d\ud2b8 \uacbd\ud5d8', '\uc608\uc0b0 \ud6a8\uc728\uc131']
+  result.deliverables = ['\uc81c\uc548\uc11c', '\uc0ac\uc5c5\uacc4\ud68d\uc11c', '\ucd5c\uc885 \ubcf4\uace0\uc11c']
+  result.technology_stack = ['\uc2dc\uc2a4\ud15c \uad6c\ucd95', '\ub370\uc774\ud130 \uc5f0\ub3d9', '\ubcf4\uc548 \uc2dc\uc2a4\ud15c']
+  
+  return result
+}
 
 // === API 라우트 ===
 
@@ -47,17 +124,45 @@ app.get('/api/health', (c) => {
 // 1. AI 가상고객 생성 API
 app.get('/api/customers', async (c) => {
   try {
-    const db = new DatabaseService(c.env.DB)
-    const customers = await db.getAllCustomers()
+    const storage = new JsonStorageService(c.env.KV)
+    const customers = await storage.getAllVirtualCustomers()
     
     return c.json({
       success: true,
       data: customers
     })
   } catch (error) {
+    console.error('고객 목록 조회 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '고객 목록 조회 중 오류가 발생했습니다.'
+    }, 500)
+  }
+})
+
+// 1.1 AI 가상고객 상세 조회 API
+app.get('/api/customers/:id', async (c) => {
+  try {
+    const customerId = c.req.param('id')
+    const storage = new JsonStorageService(c.env.KV)
+    
+    const customer = await storage.getVirtualCustomer(customerId)
+    if (!customer) {
+      return c.json({
+        success: false,
+        error: 'AI 가상고객을 찾을 수 없습니다.'
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      data: customer
+    })
+  } catch (error) {
+    console.error('고객 상세 조회 오류:', error)
+    return c.json({
+      success: false,
+      error: error.message || '고객 상세 조회 중 오륙가 발생했습니다.'
     }, 500)
   }
 })
@@ -65,45 +170,142 @@ app.get('/api/customers', async (c) => {
 app.post('/api/customers/deep-research', async (c) => {
   try {
     const request: DeepResearchRequest = await c.req.json()
-    const deepResearch = new DeepResearchService()
+    const { env } = c
+    
+    // OpenAI API 키가 있으면 LLM 연동, 없으면 기본 모드
+    const deepResearch = new DeepResearchService(env.OPENAI_API_KEY)
+    const storage = new JsonStorageService(env.KV)
+    
+    console.log(`딥리서치 요청: ${request.company_name}`)
     
     const researchData = await deepResearch.collectCompanyData(
       request.company_name,
-      request.urls,
-      request.research_depth
+      request.urls || [],
+      request.research_depth || 'detailed'
     )
+    
+    // 결과 저장 (KV 스토리지)
+    const storageKey = `deep_research:${request.company_name}:${Date.now()}`
+    if (env.KV) {
+      await env.KV.put(storageKey, JSON.stringify(researchData), {
+        metadata: {
+          type: 'deep_research',
+          company: request.company_name,
+          timestamp: new Date().toISOString()
+        }
+      })
+    }
+    
+    console.log(`딥리서치 완료: ${researchData.total_content_length}자 분석`)
     
     return c.json({
       success: true,
-      data: researchData
+      data: researchData,
+      storage_key: storageKey
     })
+    
   } catch (error) {
+    console.error('딥리서치 API 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '딥리서치 처리 중 오류가 발생했습니다'
     }, 500)
   }
 })
 
 app.post('/api/customers/rfp-analysis', async (c) => {
   try {
-    const request: RfpParsingRequest = await c.req.json()
-    const rfpAnalysis = new RfpAnalysisService()
+    const formData = await c.req.formData()
+    const { env } = c
     
-    const analysisData = await rfpAnalysis.parseRfpDocument(
-      request.file_path,
-      request.file_type,
-      request.parsing_mode
-    )
+    const rfpFile = formData.get('rfp_file') as File
+    const fileName = formData.get('file_name') as string || rfpFile.name
+    const parsingMode = formData.get('parsing_mode') as string || 'detailed'
+    
+    if (!rfpFile) {
+      return c.json({
+        success: false,
+        error: 'RFP 파일이 필요합니다'
+      }, 400)
+    }
+    
+    console.log(`RFP 분석 시작: ${fileName}`)
+    
+    // 파일 버퍼로 변환
+    const fileBuffer = await rfpFile.arrayBuffer()
+    
+    // PDF 파서로 텍스트 추출
+    const pdfParser = new PdfParserService()
+    const fileValidation = pdfParser.validateFileType(fileBuffer, fileName)
+    
+    if (!fileValidation.isValid) {
+      return c.json({
+        success: false,
+        error: '지원하지 않는 파일 형식입니다. PDF 또는 DOCX 파일을 업로드해주세요.'
+      }, 400)
+    }
+    
+    let extractedText = ''
+    
+    if (fileValidation.fileType === 'pdf') {
+      const pdfResult = await pdfParser.extractTextFromPdf(fileBuffer, fileName)
+      extractedText = pdfResult.text
+      console.log(`PDF 텍스트 추출 완료: ${extractedText.length}자`)
+    } else if (fileValidation.fileType === 'docx') {
+      const docxResult = await pdfParser.extractTextFromDocx(fileBuffer, fileName)
+      extractedText = docxResult.text
+      console.log(`DOCX 텍스트 추출 완료: ${extractedText.length}자`)
+    }
+    
+    // RFP 분석 서비스 실행
+    const rfpAnalysis = new RfpAnalysisService(env.OPENAI_API_KEY)
+    const storage = new JsonStorageService(env.KV)
+    
+    let rfpAnalysisData
+    
+    if (env.OPENAI_API_KEY && extractedText.length > 200) {
+      // OpenAI로 실제 분석
+      const openai = new OpenAIService(env.OPENAI_API_KEY)
+      rfpAnalysisData = await openai.extractRfpAnalysisData(extractedText, fileName)
+      console.log('OpenAI RFP 분석 완료')
+    } else {
+      // 기본 분석 (텍스트 기반 키워드 매칭)
+      rfpAnalysisData = await generateBasicRfpAnalysis(extractedText, fileName)
+      console.log('기본 RFP 분석 완료')
+    }
+    
+    // 결과 저장
+    const storageKey = `rfp_analysis:${fileName}:${Date.now()}`
+    const analysisResult = {
+      file_name: fileName,
+      file_size: fileBuffer.byteLength,
+      extracted_text_length: extractedText.length,
+      rfp_analysis_data: rfpAnalysisData,
+      parsing_mode: parsingMode,
+      analysis_timestamp: new Date().toISOString()
+    }
+    
+    if (env.KV) {
+      await env.KV.put(storageKey, JSON.stringify(analysisResult), {
+        metadata: {
+          type: 'rfp_analysis',
+          file_name: fileName,
+          timestamp: new Date().toISOString()
+        }
+      })
+    }
     
     return c.json({
       success: true,
-      data: analysisData
+      data: analysisResult,
+      storage_key: storageKey
     })
+    
   } catch (error) {
+    console.error('RFP 분석 API 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || 'RFP 분석 중 오류가 발생했습니다'
     }, 500)
   }
 })
@@ -111,107 +313,196 @@ app.post('/api/customers/rfp-analysis', async (c) => {
 app.post('/api/customers/generate', async (c) => {
   try {
     const { deep_research_data, rfp_analysis_data, company_name, department } = await c.req.json()
+    const { env } = c
     
-    const customerGeneration = new CustomerGenerationService()
-    const db = new DatabaseService(c.env.DB)
+    const storage = new JsonStorageService(env.KV)
     
-    // 30속성 결합 및 페르소나 생성
-    const customer = await customerGeneration.generateVirtualCustomer(
-      deep_research_data,
-      rfp_analysis_data,
-      company_name,
-      department
-    )
+    let customer
     
-    // 데이터베이스에 저장
-    const customerId = await db.saveCustomer(customer)
+    if (env.OPENAI_API_KEY) {
+      // LLM 기반 실제 가상고객 생성
+      const openai = new OpenAIService(env.OPENAI_API_KEY)
+      
+      customer = await openai.generateVirtualCustomer(
+        deep_research_data,
+        rfp_analysis_data,
+        company_name,
+        department || '경영기획'
+      )
+      console.log('LLM AI 가상고객 생성 완룼')
+    } else {
+      // 기본 가상고객 생성
+      const customerGeneration = new CustomerGenerationService()
+      customer = await customerGeneration.generateVirtualCustomer(
+        deep_research_data,
+        rfp_analysis_data,
+        company_name,
+        department || '경영기획'
+      )
+      console.log('기본 AI 가상고객 생성 완룼')
+    }
+    
+    // KV 스토리지에 저장
+    const customerId = await storage.saveVirtualCustomer(customer)
     
     return c.json({
       success: true,
       data: { ...customer, id: customerId }
     })
   } catch (error) {
+    console.error('AI 가상고객 생성 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || 'AI 가상고객 생성 중 오류가 발생했습니다.'
     }, 500)
   }
 })
 
-// 2. 제안서 평가 API
+// 2. 제안서 평가 API (실제 LLM 통합)
 app.post('/api/evaluations/proposal', async (c) => {
   try {
     const { customer_id, proposal_title, proposal_content } = await c.req.json()
+    const { env } = c
     
-    const db = new DatabaseService(c.env.DB)
-    const evaluation = new EvaluationService()
+    const storage = new JsonStorageService(env.KV)
     
-    // 고객 프로필 로드
-    const customer = await db.getCustomerById(customer_id)
+    // AI 가상고객 로드
+    const customer = await storage.getVirtualCustomer(customer_id)
     if (!customer) {
       return c.json({
         success: false,
-        error: 'Customer not found'
+        error: 'AI 가상고객을 찾을 수 없습니다.'
       }, 404)
     }
     
-    // LLM 기반 제안서 평가
-    const proposalEvaluation = await evaluation.evaluateProposal(
-      customer,
-      proposal_title,
-      proposal_content
-    )
+    let proposalEvaluation
+    
+    if (env.OPENAI_API_KEY) {
+      // LLM 기반 실제 평가
+      const llmEvaluation = new LLMEvaluationService(
+        env.OPENAI_API_KEY,
+        env.KV
+      )
+      
+      proposalEvaluation = await llmEvaluation.evaluateProposal(
+        customer_id,
+        proposal_content,
+        proposal_title
+      )
+      console.log('LLM 제안서 평가 완료')
+    } else {
+      // 기본 샘플 평가
+      proposalEvaluation = {
+        customer_id,
+        proposal_title,
+        proposal_content,
+        scores: {
+          clarity: { score: 4, comment: '제안서가 명확하게 구성되어 있습니다.' },
+          expertise: { score: 4, comment: '전문성이 잘 드러나지만 더 구체적인 내용이 필요합니다.' },
+          persuasiveness: { score: 3, comment: '설득력을 향상시킬 수 있는 요소가 필요합니다.' },
+          logic: { score: 4, comment: '논리적 흐름이 좋습니다.' },
+          creativity: { score: 3, comment: '창의적 요소를 더 추가하면 좋겠습니다.' },
+          credibility: { score: 4, comment: '신뢰할 만한 내용입니다.' }
+        },
+        total_score: 72,
+        overall_feedback: '전반적으로 좌은 제안서입니다. 창의성과 설득력을 향상시키면 더 좋을 것 같습니다.',
+        created_at: new Date().toISOString()
+      }
+      console.log('기본 제안서 평가 완료')
+    }
     
     // 결과 저장
-    const evaluationId = await db.saveProposalEvaluation(proposalEvaluation)
+    const evaluationId = await storage.saveProposalEvaluation(proposalEvaluation)
     
     return c.json({
       success: true,
       data: { ...proposalEvaluation, id: evaluationId }
     })
   } catch (error) {
+    console.error('제안서 평가 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '제안서 평가 중 오류가 발생했습니다.'
     }, 500)
   }
 })
 
-// 3. 발표 평가 API
+// 3. 발표 평가 API (실제 LLM 통합)
 app.post('/api/evaluations/presentation', async (c) => {
   try {
-    const { customer_id, presentation_title, audio_file_path } = await c.req.json()
+    const { customer_id, presentation_title, stt_transcript, speech_metrics } = await c.req.json()
+    const { env } = c
     
-    const db = new DatabaseService(c.env.DB)
-    const evaluation = new EvaluationService()
+    const storage = new JsonStorageService(env.KV)
     
-    // 고객 프로필 로드
-    const customer = await db.getCustomerById(customer_id)
+    // AI 가상고객 로드
+    const customer = await storage.getVirtualCustomer(customer_id)
     if (!customer) {
       return c.json({
         success: false,
-        error: 'Customer not found'
+        error: 'AI 가상고객을 찾을 수 없습니다.'
       }, 404)
     }
     
-    // STT + LLM 기반 발표 평가
-    const presentationEvaluation = await evaluation.evaluatePresentation(
-      customer,
-      presentation_title,
-      audio_file_path
-    )
+    let presentationEvaluation
+    
+    if (env.OPENAI_API_KEY && stt_transcript) {
+      // LLM 기반 실제 평가
+      const llmEvaluation = new LLMEvaluationService(
+        env.OPENAI_API_KEY,
+        env.KV
+      )
+      
+      presentationEvaluation = await llmEvaluation.evaluatePresentation(
+        customer_id,
+        stt_transcript,
+        presentation_title,
+        speech_metrics
+      )
+      console.log('LLM 발표 평가 완료')
+    } else {
+      // 기본 샘플 평가 (데모와 동일)
+      const sampleTranscript = stt_transcript || "안녕하십니까, PwC 컸설팅의 발표를 시작하겠습니다. 이번 제안의 핵심은 ERP, MES, ESG 시스템을 하나의 플랫폼으로 통합하는 것입니다."
+      
+      presentationEvaluation = {
+        customer_id,
+        presentation_title,
+        stt_transcript: sampleTranscript,
+        speech_metrics: speech_metrics || {
+          duration_seconds: 180,
+          word_count: 89,
+          words_per_minute: 29.7,
+          pause_count: 6,
+          filler_word_count: 2,
+          average_volume_level: 0.75
+        },
+        scores: {
+          clarity: { score: 4, comment: '발표 내용이 명확하고 체계적으로 구성되어 있습니다.' },
+          expertise: { score: 5, comment: '화학산업과 ESG 분야의 전문성이 뛰어나게 드러납니다.' },
+          persuasiveness: { score: 4, comment: '고객의 니즈를 정확히 파악하고 해결방안을 논리적으로 제시했습니다.' },
+          logic: { score: 4, comment: '논리적 흐름이 체계적이고 근거가 타당합니다.' },
+          creativity: { score: 3, comment: '안정적이고 검증된 접근법이지만, 혁신적이고 차별화된 아이디어가 더 필요합니다.' },
+          credibility: { score: 5, comment: 'PwC의 브랜드 신뢰도와 화학산업 프로젝트 경험이 매우 신뢰할 만합니다.' }
+        },
+        total_score: 84,
+        overall_feedback: '화학산업 전문성과 ESG 대응 역량이 우수하며, 체계적이고 실현가능한 실행 계획을 제시했습니다. 발표 스킬 면에서는 명확한 전달력을 보였나, 더욱 창의적이고 혁신적인 차별화 요소를 강화하면 경쟁력이 높아질 것입니다. 전반적으로 신뢰할 수 있는 우수한 발표였습니다.',
+        created_at: new Date().toISOString()
+      }
+      console.log('기본 발표 평가 완료')
+    }
     
     // 결과 저장
-    const evaluationId = await db.savePresentationEvaluation(presentationEvaluation)
+    const evaluationId = await storage.savePresentationEvaluation(presentationEvaluation)
     
     return c.json({
       success: true,
       data: { ...presentationEvaluation, id: evaluationId }
     })
   } catch (error) {
+    console.error('발표 평가 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '발표 평가 중 오류가 발생했습니다.'
     }, 500)
   }
 })
@@ -261,8 +552,8 @@ app.post('/api/demo/presentation-evaluation', async (c) => {
     }
     
     // 점수 변환 함수: 1-5점을 10/20/30/40/50점으로 변환
-    const convertTo100Scale = (score) => {
-      const mapping = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50 }
+    function convertTo100Scale(score: number): number {
+      const mapping: Record<number, number> = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50 }
       return mapping[score] || 0
     }
     
@@ -310,37 +601,150 @@ app.post('/api/demo/presentation-evaluation', async (c) => {
   }
 })
 
-// 4. 통합 결과 API
+// 4. 통합 결과 API (실제 LLM 통합)
+// 4.0 개별 평가 조회 API
+app.get('/api/evaluations/proposal/:id', async (c) => {
+  try {
+    const evaluationId = c.req.param('id')
+    const storage = new JsonStorageService(c.env.KV)
+    
+    const evaluation = await storage.getProposalEvaluation(evaluationId)
+    if (!evaluation) {
+      return c.json({
+        success: false,
+        error: '제안서 평가 결과를 찾을 수 없습니다.'
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      data: evaluation
+    })
+  } catch (error) {
+    console.error('제안서 평가 조회 오류:', error)
+    return c.json({
+      success: false,
+      error: error.message || '제안서 평가 조회 중 오륙가 발생했습니다.'
+    }, 500)
+  }
+})
+
+app.get('/api/evaluations/presentation/:id', async (c) => {
+  try {
+    const evaluationId = c.req.param('id')
+    const storage = new JsonStorageService(c.env.KV)
+    
+    const evaluation = await storage.getPresentationEvaluation(evaluationId)
+    if (!evaluation) {
+      return c.json({
+        success: false,
+        error: '발표 평가 결과를 찾을 수 없습니다.'
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      data: evaluation
+    })
+  } catch (error) {
+    console.error('발표 평가 조회 오륙:', error)
+    return c.json({
+      success: false,
+      error: error.message || '발표 평가 조회 중 오륙가 발생했습니다.'
+    }, 500)
+  }
+})
+
+app.get('/api/evaluations/integrated/:id', async (c) => {
+  try {
+    const evaluationId = c.req.param('id')
+    const storage = new JsonStorageService(c.env.KV)
+    
+    const evaluation = await storage.getIntegratedEvaluation(evaluationId)
+    if (!evaluation) {
+      return c.json({
+        success: false,
+        error: '통합 평가 결과를 찾을 수 없습니다.'
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      data: evaluation
+    })
+  } catch (error) {
+    console.error('통합 평가 조회 오륙:', error)
+    return c.json({
+      success: false,
+      error: error.message || '통합 평가 조회 중 오륙가 발생했습니다.'
+    }, 500)
+  }
+})
+
+// 4.1 통합 결과 생성 API
 app.post('/api/evaluations/integrate', async (c) => {
   try {
     const { customer_id, proposal_evaluation_id, presentation_evaluation_id, project_title } = await c.req.json()
+    const { env } = c
     
-    const db = new DatabaseService(c.env.DB)
-    const evaluation = new EvaluationService()
+    const storage = new JsonStorageService(env.KV)
     
     // 제안서/발표 평가 데이터 로드
-    const proposalEval = proposal_evaluation_id ? await db.getProposalEvaluation(proposal_evaluation_id) : null
-    const presentationEval = presentation_evaluation_id ? await db.getPresentationEvaluation(presentation_evaluation_id) : null
+    const proposalEval = proposal_evaluation_id ? await storage.getProposalEvaluation(proposal_evaluation_id) : null
+    const presentationEval = presentation_evaluation_id ? await storage.getPresentationEvaluation(presentation_evaluation_id) : null
     
-    // 통합 결과 생성
-    const integratedResult = await evaluation.integrateResults(
-      customer_id,
-      proposalEval,
-      presentationEval,
-      project_title
-    )
+    let integratedResult
+    
+    if (env.OPENAI_API_KEY) {
+      // LLM 기반 실제 통합
+      const llmEvaluation = new LLMEvaluationService(
+        env.OPENAI_API_KEY,
+        env.KV
+      )
+      
+      integratedResult = await llmEvaluation.generateIntegratedResult(
+        customer_id,
+        proposalEval,
+        presentationEval,
+        project_title
+      )
+      console.log('LLM 통합 결과 생성 완료')
+    } else {
+      // 기본 통합 결과
+      const proposalScore = proposalEval?.total_score || 0
+      const presentationScore = presentationEval?.total_score || 0
+      const finalScore = Math.round(proposalScore * 0.7 + presentationScore * 0.3)
+      
+      integratedResult = {
+        customer_id,
+        project_title: project_title || '프로젝트 제안',
+        proposal_evaluation: proposalEval,
+        presentation_evaluation: presentationEval,
+        final_score: finalScore,
+        weighted_scores: {
+          proposal_weighted: Math.round(proposalScore * 0.7),
+          presentation_weighted: Math.round(presentationScore * 0.3)
+        },
+        strengths: ['전문성 우수', '신뢰도 높음', '체계적 접근'],
+        improvements: ['창의적 요소 보강', '설득력 향상', '차별화 요소 추가'],
+        overall_feedback: `전문성과 신뢰도 측면에서 우수한 평가를 받았습니다. 창의적 요소와 차별화 전략을 보강하면 더욱 경쟁력 있는 제안이 될 것입니다. (최종 점수: ${finalScore}점)`,
+        created_at: new Date().toISOString()
+      }
+      console.log('기본 통합 결과 생성 완료')
+    }
     
     // 결과 저장
-    const resultId = await db.saveIntegratedEvaluation(integratedResult)
+    const resultId = await storage.saveIntegratedEvaluation(integratedResult)
     
     return c.json({
       success: true,
       data: { ...integratedResult, id: resultId }
     })
   } catch (error) {
+    console.error('통합 결과 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '통합 결과 생성 중 오류가 발생했습니다.'
     }, 500)
   }
 })
@@ -348,17 +752,18 @@ app.post('/api/evaluations/integrate', async (c) => {
 // 5. 세션 관리 API
 app.get('/api/sessions', async (c) => {
   try {
-    const db = new DatabaseService(c.env.DB)
-    const sessions = await db.getAllSessions()
+    const storage = new JsonStorageService(c.env.KV)
+    const sessions = await storage.getAllSessions()
     
     return c.json({
       success: true,
       data: sessions
     })
   } catch (error) {
+    console.error('세션 목록 조회 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '세션 목록 조회 중 오류가 발생했습니다.'
     }, 500)
   }
 })
@@ -366,7 +771,7 @@ app.get('/api/sessions', async (c) => {
 app.post('/api/sessions', async (c) => {
   try {
     const { session_name } = await c.req.json()
-    const db = new DatabaseService(c.env.DB)
+    const storage = new JsonStorageService(c.env.KV)
     
     const session: EvaluationSession = {
       id: crypto.randomUUID(),
@@ -382,16 +787,17 @@ app.post('/api/sessions', async (c) => {
       updated_at: new Date().toISOString()
     }
     
-    const sessionId = await db.saveSession(session)
+    const sessionId = await storage.saveSession(session)
     
     return c.json({
       success: true,
       data: { ...session, id: sessionId }
     })
   } catch (error) {
+    console.error('세션 생성 오류:', error)
     return c.json({
       success: false,
-      error: error.message
+      error: error.message || '세션 생성 중 오류가 발생했습니다.'
     }, 500)
   }
 })
@@ -762,7 +1168,7 @@ app.get('/', (c) => {
             </div>
         </nav>
 
-        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
+        <main class="pwc-container" style="padding-top: var(--spacing-lg); padding-bottom: var(--spacing-xl);">
             <!-- 진행 단계 카드 -->
             <div class="pwc-card">
                 <div class="pwc-card-header">
@@ -805,11 +1211,8 @@ app.get('/', (c) => {
                     <div class="pwc-mobile-hidden" style="height: 2px; background: linear-gradient(90deg, var(--pwc-gray-300), var(--pwc-orange)); flex: 1; align-self: center; margin: 0 var(--spacing-md);"></div>
                     
                     <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-success), #007d3c); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
-                            <i class="fas fa-chart-line" style="font-size: 1.5rem; z-index: 2;"></i>
-                            <!-- 작은 데이터 포인트들 -->
-                            <div style="position: absolute; top: 8px; right: 8px; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.8); border-radius: 50%;"></div>
-                            <div style="position: absolute; bottom: 10px; left: 10px; width: 3px; height: 3px; background: rgba(255, 255, 255, 0.6); border-radius: 50%;"></div>
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-success), #007d3c); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
+                            <i class="fas fa-chart-line" style="font-size: 1.5rem;"></i>
                         </div>
                         <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">통합 결과</h4>
                         <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">레이더 차트 + 피드백</p>
@@ -818,7 +1221,7 @@ app.get('/', (c) => {
             </div>
 
             <!-- 기능 카드들 -->
-            <div class="pwc-grid pwc-grid-2" style="margin-bottom: var(--spacing-3xl);">
+            <div class="pwc-grid pwc-grid-2" style="margin-bottom: var(--spacing-lg);">
                 <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/customer-generation'">
                     <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
                         <div style="background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-dark)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
@@ -1652,32 +2055,32 @@ app.get('/presentation-evaluation', (c) => {
                 <div class="pwc-card-content">
                     <!-- 점수 차트 -->
                     <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-navy-light)); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="clarity-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">명확성</div>
                             <i class="fas fa-eye" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--success-color-light), var(--success-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-success), #007d3c); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="expertise-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">전문성</div>
                             <i class="fas fa-graduation-cap" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-orange-light), var(--pwc-orange)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-dark)); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="persuasiveness-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">설득력</div>
                             <i class="fas fa-handshake" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--info-color-light), var(--info-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-info), var(--pwc-navy)); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="logic-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">논리성</div>
                             <i class="fas fa-brain" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--warning-color-light), var(--warning-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-warning), #e6a400); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="creativity-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">창의성</div>
                             <i class="fas fa-lightbulb" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
                         </div>
-                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--error-color-light), var(--error-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-error), #cc000f); border-radius: var(--radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
                             <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="credibility-score">-</div>
                             <div style="font-weight: 600; font-size: 0.95rem;">신뢰성</div>
                             <i class="fas fa-shield-alt" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
@@ -1685,7 +2088,7 @@ app.get('/presentation-evaluation', (c) => {
                     </div>
 
                     <!-- 총점 -->
-                    <div style="text-align: center; padding: var(--spacing-2xl); background: linear-gradient(135deg, var(--neutral-100), var(--neutral-50)); border: 3px solid var(--pwc-orange); border-radius: var(--border-radius-xl); margin-bottom: var(--spacing-xl); position: relative; overflow: hidden;">
+                    <div style="text-align: center; padding: var(--spacing-2xl); background: linear-gradient(135deg, var(--pwc-gray-100), var(--pwc-gray-50)); border: 3px solid var(--pwc-orange); border-radius: var(--radius-xl); margin-bottom: var(--spacing-xl); position: relative; overflow: hidden;">
                         <div style="font-size: 4rem; font-weight: 700; color: var(--pwc-navy); margin-bottom: var(--spacing-sm);" id="total-score">-</div>
                         <div style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy);">총점 (100점 만점)</div>
                         <i class="fas fa-trophy" style="position: absolute; top: var(--spacing-md); right: var(--spacing-md); color: var(--pwc-orange); font-size: 2rem; opacity: 0.3; animation: pulse 2s infinite;"></i>
@@ -1753,34 +2156,56 @@ app.get('/results', (c) => {
 
         <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
             <!-- 종합 점수 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8 text-center">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">최종 종합 점수</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-4 bg-blue-50 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-600">40점</div>
-                        <div class="text-sm text-blue-800">제안서 평가 (70%)</div>
-                    </div>
-                    <div class="p-4 bg-purple-50 rounded-lg">
-                        <div class="text-3xl font-bold text-purple-600">40점</div>
-                        <div class="text-sm text-purple-800">발표 평가 (30%)</div>
-                    </div>
-                    <div class="p-4 bg-green-50 rounded-lg">
-                        <div class="text-4xl font-bold text-green-600">40점</div>
-                        <div class="text-sm text-green-800">최종 통합 점수 (100점 만점)</div>
+            <div class="pwc-card" style="margin-bottom: var(--spacing-xl); text-align: center;">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title" style="font-size: 1.75rem; color: var(--pwc-navy); margin-bottom: var(--spacing-lg);">
+                        <i class="fas fa-trophy" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        최종 종합 점수
+                    </h2>
+                </div>
+                <div class="pwc-card-body">
+                    <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-lg);">
+                        <div class="pwc-score-card" style="background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-light-blue)); color: var(--pwc-white); border-radius: var(--radius-lg); padding: var(--spacing-lg); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); border-radius: 50%;"></div>
+                            <div style="font-size: 2.25rem; font-weight: 700; margin-bottom: var(--spacing-sm);">40점</div>
+                            <div style="font-size: 0.9rem; font-weight: 500; opacity: 0.9;">제안서 평가 (70%)</div>
+                        </div>
+                        <div class="pwc-score-card" style="background: linear-gradient(135deg, var(--pwc-purple), var(--pwc-purple-light)); color: var(--pwc-white); border-radius: var(--radius-lg); padding: var(--spacing-lg); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); border-radius: 50%;"></div>
+                            <div style="font-size: 2.25rem; font-weight: 700; margin-bottom: var(--spacing-sm);">40점</div>
+                            <div style="font-size: 0.9rem; font-weight: 500; opacity: 0.9;">발표 평가 (30%)</div>
+                        </div>
+                        <div class="pwc-score-card" style="background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-light)); color: var(--pwc-white); border-radius: var(--radius-lg); padding: var(--spacing-lg); position: relative; overflow: hidden; border: 3px solid var(--pwc-navy);">
+                            <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255, 255, 255, 0.2); border-radius: 50%;"></div>
+                            <div style="font-size: 2.75rem; font-weight: 700; margin-bottom: var(--spacing-sm); text-shadow: 0 2px 4px rgba(0,0,0,0.2);">40점</div>
+                            <div style="font-size: 0.9rem; font-weight: 600; opacity: 0.95;">최종 통합 점수 (100점 만점)</div>
+                            <div style="position: absolute; bottom: 5px; right: 10px;">
+                                <i class="fas fa-star" style="color: var(--pwc-white); font-size: 1.2rem; opacity: 0.7;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 레이더 차트 및 상세 분석 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">6대 지표별 상세 분석</h2>
+            <div class="pwc-card" style="margin-bottom: var(--spacing-xl);">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title" style="font-size: 1.5rem; color: var(--pwc-navy); margin-bottom: var(--spacing-lg);">
+                        <i class="fas fa-chart-radar" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        6대 지표별 상세 분석
+                    </h2>
+                </div>
+                <div class="pwc-card-body">
                 
                     <!-- 차트 컨테이너 -->
                     <div class="pwc-grid" style="grid-template-columns: 1fr; gap: var(--spacing-xl); align-items: center;">
                         <div class="pwc-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); align-items: center;" data-responsive="lg">
-                            <div class="pwc-text-center">
-                                <div style="position: relative; height: 400px; width: 400px; margin: 0 auto; background: var(--neutral-50); border-radius: 50%; padding: var(--spacing-lg); box-shadow: var(--shadow-lg);">
+                            <div style="text-align: center;">
+                                <div style="position: relative; height: 400px; width: 400px; margin: 0 auto; background: linear-gradient(135deg, var(--pwc-gray-100), var(--pwc-white)); border-radius: 50%; padding: var(--spacing-lg); box-shadow: var(--shadow-lg); border: 3px solid var(--pwc-orange-light);">
                                     <canvas id="radarChart"></canvas>
+                                    <div style="position: absolute; bottom: 10px; right: 20px; color: var(--pwc-orange); font-size: 0.8rem; font-weight: 600;">
+                                        <i class="fas fa-analytics"></i> PwC Analysis
+                                    </div>
                                 </div>
                             </div>
                     
@@ -1863,31 +2288,37 @@ app.get('/results', (c) => {
                                 
                                 <!-- 통계 요약 -->
                                 <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-md);">
-                                    <div style="background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); color: var(--pwc-white); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center;">
+                                    <div style="background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-light-blue)); color: var(--pwc-white); border-radius: var(--radius-md); padding: var(--spacing-md); text-align: center; position: relative; overflow: hidden;">
+                                        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255, 255, 255, 0.1); border-radius: 50%;"></div>
                                         <div style="font-weight: 600; margin-bottom: var(--spacing-xs); opacity: 0.9;">제안서 평균</div>
                                         <div style="font-size: 1.5rem; font-weight: 700;">40점</div>
+                                        <i class="fas fa-file-alt" style="position: absolute; bottom: 8px; right: 10px; opacity: 0.6; font-size: 1.2rem;"></i>
                                     </div>
-                                    <div style="background: linear-gradient(135deg, var(--info-color-light), var(--info-color)); color: var(--pwc-white); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center;">
+                                    <div style="background: linear-gradient(135deg, var(--pwc-purple), var(--pwc-purple-light)); color: var(--pwc-white); border-radius: var(--radius-md); padding: var(--spacing-md); text-align: center; position: relative; overflow: hidden;">
+                                        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255, 255, 255, 0.1); border-radius: 50%;"></div>
                                         <div style="font-weight: 600; margin-bottom: var(--spacing-xs); opacity: 0.9;">발표 평균</div>
                                         <div style="font-size: 1.5rem; font-weight: 700;">40점</div>
+                                        <i class="fas fa-presentation" style="position: absolute; bottom: 8px; right: 10px; opacity: 0.6; font-size: 1.2rem;"></i>
                                     </div>
                                 </div>
                                 
                                 <!-- 지표별 성과 분석 -->
-                                <div style="background: var(--neutral-50); border-radius: var(--border-radius-md); padding: var(--spacing-lg); border: 2px solid var(--pwc-orange-light);">
-                                    <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);"><i class="fas fa-analytics" style="color: var(--pwc-orange);"></i>성과 분석</h4>
-                                    <ul style="display: flex; flex-direction: column; gap: var(--spacing-sm); font-size: 0.9rem; color: var(--text-color);">
-                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
-                                            <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
-                                            <strong>최고 점수:</strong> 전문성, 신뢰성 (50점)
+                                <div style="background: linear-gradient(135deg, var(--pwc-gray-100), var(--pwc-white)); border-radius: var(--radius-md); padding: var(--spacing-lg); border: 2px solid var(--pwc-orange-light); box-shadow: var(--shadow-md);">
+                                    <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm); border-bottom: 2px solid var(--pwc-orange-light); padding-bottom: var(--spacing-sm);">
+                                        <i class="fas fa-chart-line" style="color: var(--pwc-orange);"></i>성과 분석
+                                    </h4>
+                                    <ul style="display: flex; flex-direction: column; gap: var(--spacing-md); font-size: 0.95rem; color: var(--text-color);">
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all; background: var(--pwc-success-light); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 4px solid var(--pwc-success);">
+                                            <i class="fas fa-trophy" style="color: var(--pwc-success); font-size: 1.1rem;"></i>
+                                            <strong style="color: var(--pwc-navy);">최고 점수:</strong> <span style="color: var(--pwc-success); font-weight: 600;">전문성, 신뢰성 (50점)</span>
                                         </li>
-                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
-                                            <i class="fas fa-chart-line" style="color: var(--warning-color);"></i>
-                                            <strong>개선 필요:</strong> 창의성 (30점)
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all; background: var(--pwc-warning-light); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 4px solid var(--pwc-warning);">
+                                            <i class="fas fa-exclamation-triangle" style="color: var(--pwc-warning); font-size: 1.1rem;"></i>
+                                            <strong style="color: var(--pwc-navy);">개선 필요:</strong> <span style="color: var(--pwc-warning); font-weight: 600;">창의성 (30점)</span>
                                         </li>
-                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
-                                            <i class="fas fa-balance-scale" style="color: var(--pwc-blue);"></i>
-                                            <strong>평가 일관성:</strong> 제안서와 발표 점수 차이 없음
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all; background: var(--pwc-info-light); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 4px solid var(--pwc-info);">
+                                            <i class="fas fa-balance-scale" style="color: var(--pwc-info); font-size: 1.1rem;"></i>
+                                            <strong style="color: var(--pwc-navy);">평가 일관성:</strong> <span style="color: var(--pwc-info); font-weight: 600;">제안서와 발표 점수 차이 없음</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -1895,6 +2326,7 @@ app.get('/results', (c) => {
                         </div>
                     </div>
                 </div>
+            </div>
 
             <!-- 성과 요약 및 진행률 바 -->
             <div class="pwc-card" style="margin-bottom: var(--spacing-xl);">

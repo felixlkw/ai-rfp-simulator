@@ -1,8 +1,19 @@
 // RFP 분석 서비스 - RFP 문서에서 15속성 자동 추출
 
+import { OpenAIService } from './openai-service'
+import { PdfParserService } from './pdf-parser-service'
 import type { RfpAnalysisData, RfpAnalysisAttribute } from '../types/ai-customer'
 
 export class RfpAnalysisService {
+  private openaiService?: OpenAIService
+  private pdfParser: PdfParserService
+
+  constructor(openaiApiKey?: string) {
+    if (openaiApiKey) {
+      this.openaiService = new OpenAIService(openaiApiKey)
+    }
+    this.pdfParser = new PdfParserService()
+  }
   
   // RFP 분석 15속성 정의
   private readonly RFP_ATTRIBUTES = [
