@@ -805,8 +805,11 @@ app.get('/', (c) => {
                     <div class="pwc-mobile-hidden" style="height: 2px; background: linear-gradient(90deg, var(--pwc-gray-300), var(--pwc-orange)); flex: 1; align-self: center; margin: 0 var(--spacing-md);"></div>
                     
                     <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-success), #007d3c); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
-                            <i class="fas fa-chart-radar" style="font-size: 1.5rem;"></i>
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-success), #007d3c); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
+                            <i class="fas fa-chart-line" style="font-size: 1.5rem; z-index: 2;"></i>
+                            <!-- 작은 데이터 포인트들 -->
+                            <div style="position: absolute; top: 8px; right: 8px; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.8); border-radius: 50%;"></div>
+                            <div style="position: absolute; bottom: 10px; left: 10px; width: 3px; height: 3px; background: rgba(255, 255, 255, 0.6); border-radius: 50%;"></div>
                         </div>
                         <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">통합 결과</h4>
                         <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">레이더 차트 + 피드백</p>
@@ -896,8 +899,14 @@ app.get('/', (c) => {
 
                 <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/results'">
                     <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
-                        <div style="background: linear-gradient(135deg, var(--pwc-navy), var(--pwc-navy-light)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-chart-radar" style="color: var(--pwc-white); font-size: 1.5rem;"></i>
+                        <div style="background: linear-gradient(135deg, var(--pwc-navy), var(--pwc-navy-light)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                            <i class="fas fa-chart-line" style="color: var(--pwc-white); font-size: 1.5rem; z-index: 2; position: relative;"></i>
+                            <!-- 차트 시각화 요소들 -->
+                            <div style="position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: var(--pwc-orange); border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <div style="position: absolute; bottom: 12px; left: 12px; width: 6px; height: 6px; background: rgba(255, 255, 255, 0.8); border-radius: 50%;"></div>
+                            <div style="position: absolute; top: 20px; left: 15px; width: 4px; height: 4px; background: var(--pwc-orange-light); border-radius: 50%; opacity: 0.6;"></div>
+                            <!-- 배경 패턴 -->
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--pwc-orange), transparent); opacity: 0.4;"></div>
                         </div>
                         <div style="flex: 1;">
                             <h3 class="pwc-card-title" style="margin-bottom: var(--spacing-sm);">통합 결과</h3>
@@ -906,15 +915,15 @@ app.get('/', (c) => {
                     </div>
                     <ul style="list-style: none; color: var(--pwc-gray-600); font-size: 0.875rem; line-height: 1.6; padding-left: var(--spacing-lg);">
                         <li style="margin-bottom: var(--spacing-xs);">
-                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            <i class="fas fa-chart-pie" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
                             6각형 레이더 차트
                         </li>
                         <li style="margin-bottom: var(--spacing-xs);">
-                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            <i class="fas fa-thumbs-up" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
                             강점·보완·총평
                         </li>
                         <li>
-                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            <i class="fas fa-file-pdf" style="color: var(--pwc-error); margin-right: var(--spacing-sm);"></i>
                             PDF 결과 내보내기
                         </li>
                     </ul>
