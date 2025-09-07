@@ -1221,100 +1221,164 @@ app.get('/customer-generation', (c) => {
                 </ul>
             </div>
         </nav>
-        <main class="pwc-container" style="padding-top: var(--spacing-xl);">
-            <div id="customer-generation-app">
-            
+        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
             <!-- 진행 단계 표시 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">1</div>
-                        <span class="font-medium">딥리서치 수집</span>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-route" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        AI 가상고객 생성 프로세스
+                    </h2>
+                    <p class="pwc-card-subtitle">딥리서치와 RFP 분석을 통해 30속성 가상고객을 생성합니다.</p>
+                </div>
+                
+                <div class="pwc-flex pwc-flex-between pwc-flex-mobile-col" style="gap: var(--spacing-lg);">
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; flex: 1;">
+                        <div style="width: 50px; height: 50px; background: var(--pwc-orange); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">1</div>
+                        <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">딥리서치 수집</h4>
+                        <p style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">15속성 기업 분석</p>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-gray-300 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">2</div>
-                        <span class="text-gray-500">RFP 분석</span>
+                    
+                    <div class="pwc-mobile-hidden" style="height: 2px; background: var(--pwc-gray-300); flex: 0.5; align-self: center; margin: 0 var(--spacing-md);"></div>
+                    
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; flex: 1;">
+                        <div style="width: 50px; height: 50px; background: var(--pwc-gray-400); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-sm);">2</div>
+                        <h4 style="font-weight: 600; color: var(--pwc-gray-600); margin-bottom: var(--spacing-xs); word-break: keep-all;">RFP 분석</h4>
+                        <p style="font-size: 0.875rem; color: var(--pwc-gray-500); word-break: keep-all;">15속성 요구사항 추출</p>
                     </div>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-gray-300 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">3</div>
-                        <span class="text-gray-500">페르소나 생성</span>
+                    
+                    <div class="pwc-mobile-hidden" style="height: 2px; background: var(--pwc-gray-300); flex: 0.5; align-self: center; margin: 0 var(--spacing-md);"></div>
+                    
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; flex: 1;">
+                        <div style="width: 50px; height: 50px; background: var(--pwc-gray-400); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-sm);">3</div>
+                        <h4 style="font-weight: 600; color: var(--pwc-gray-600); margin-bottom: var(--spacing-xs); word-break: keep-all;">페르소나 생성</h4>
+                        <p style="font-size: 0.875rem; color: var(--pwc-gray-500); word-break: keep-all;">30속성 통합 고객</p>
                     </div>
                 </div>
             </div>
 
             <!-- 딥리서치 섹션 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-search mr-2 text-blue-600"></i>딥리서치 수집 (15속성)
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-search" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                        딥리서치 수집 (15속성)
+                    </h2>
+                    <p class="pwc-card-subtitle">기업의 비즈니스 모델, 조직 문화, 기술 수준 등 15가지 핵심 속성을 자동 수집합니다.</p>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">회사명</label>
-                        <input type="text" id="company-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" placeholder="예: 삼성전자">
+                <div class="pwc-grid pwc-grid-2">
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">회사명</label>
+                        <input type="text" id="company-name" class="pwc-input" placeholder="예: 금고석유화학">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">분석 깊이</label>
-                        <select id="research-depth" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                            <option value="basic">기본 분석</option>
-                            <option value="comprehensive">종합 분석</option>
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">분석 깊이</label>
+                        <select id="research-depth" class="pwc-select">
+                            <option value="basic">기본 분석 (5-7속성)</option>
+                            <option value="comprehensive" selected>종합 분석 (15속성)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="flex space-x-4">
-                    <button id="start-research" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">
-                        <i class="fas fa-play mr-2"></i>딥리서치 시작
+                <div class="pwc-flex pwc-flex-mobile-col" style="gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                    <button id="start-research" class="pwc-btn pwc-btn-primary">
+                        <i class="fas fa-play"></i>
+                        딥리서치 시작
                     </button>
-                    <button id="demo-deep-research" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md transition-colors">
-                        <i class="fas fa-rocket mr-2"></i>데모 데이터 로드
+                    <button id="demo-deep-research" class="pwc-btn pwc-btn-secondary">
+                        <i class="fas fa-rocket"></i>
+                        데모 데이터 로드
                     </button>
                 </div>
 
-                <div id="research-results" class="mt-6 hidden">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">수집된 속성</h3>
-                    <div id="research-attributes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div id="research-results" class="pwc-alert pwc-alert-success" style="display: none;">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-md); word-break: keep-all;">
+                        <i class="fas fa-check-circle" style="margin-right: var(--spacing-xs);"></i>
+                        딥리서치 수집 완료 (15속성)
+                    </h4>
+                    <div id="research-attributes" class="pwc-grid pwc-grid-3" style="margin-top: var(--spacing-md);">
                         <!-- 동적으로 생성됨 -->
                     </div>
                 </div>
             </div>
 
             <!-- RFP 분석 섹션 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-file-upload mr-2 text-green-600"></i>RFP 문서 분석 (15속성)
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-file-upload" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                        RFP 문서 분석 (15속성)
+                    </h2>
+                    <p class="pwc-card-subtitle">RFP 문서에서 프로젝트 목표, 요구사항, 예산 등 15가지 속성을 자동 추출합니다.</p>
+                </div>
                 
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="rfp-drop-zone">
-                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-lg font-medium text-gray-700 mb-2">RFP 파일을 업로드하세요</p>
-                    <p class="text-gray-500 mb-4">PDF, DOCX, TXT 형식 지원</p>
-                    <input type="file" id="rfp-file" accept=".pdf,.docx,.txt" class="hidden">
-                    <div class="flex space-x-4 justify-center">
-                        <button onclick="document.getElementById('rfp-file').click()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors">
+                <div class="pwc-file-upload" id="rfp-drop-zone">
+                    <i class="fas fa-file-contract" style="font-size: 3rem; color: var(--pwc-gray-400); margin-bottom: var(--spacing-lg);"></i>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-sm); word-break: keep-all;">RFP 문서를 업로드하세요</h4>
+                    <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-lg); word-break: keep-all;">PDF, DOCX, TXT 형식 지원 (최대 50MB)</p>
+                    <input type="file" id="rfp-file" accept=".pdf,.docx,.txt" style="display: none;">
+                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-md);">
+                        <button onclick="document.getElementById('rfp-file').click()" class="pwc-btn pwc-btn-primary">
+                            <i class="fas fa-folder-open"></i>
                             파일 선택
                         </button>
-                        <button id="demo-rfp-analysis" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md transition-colors">
-                            <i class="fas fa-rocket mr-2"></i>데모 RFP 로드
+                        <button id="demo-rfp-analysis" class="pwc-btn pwc-btn-secondary">
+                            <i class="fas fa-rocket"></i>
+                            데모 RFP 로드
                         </button>
                     </div>
                 </div>
 
-                <div id="rfp-results" class="mt-6 hidden">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">추출된 속성</h3>
-                    <div id="rfp-attributes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div id="rfp-results" class="pwc-alert pwc-alert-info" style="display: none; margin-top: var(--spacing-lg);">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-md); word-break: keep-all;">
+                        <i class="fas fa-check-circle" style="margin-right: var(--spacing-xs);"></i>
+                        RFP 분석 완료 (15속성)
+                    </h4>
+                    <div id="rfp-attributes" class="pwc-grid pwc-grid-3" style="margin-top: var(--spacing-md);">
                         <!-- 동적으로 생성됨 -->
                     </div>
                 </div>
             </div>
 
-            <!-- 가상고객 생성 버튼 -->
-            <div class="text-center">
-                <button id="generate-customer" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors disabled:bg-gray-400" disabled>
-                    <i class="fas fa-robot mr-2"></i>AI 가상고객 생성
-                </button>
+            <!-- 가상고객 생성 섹션 -->
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-robot" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                        AI 가상고객 생성
+                    </h2>
+                    <p class="pwc-card-subtitle">딥리서치와 RFP 분석 결과를 바탕으로 30속성 가상고객 페르소나를 생성합니다.</p>
+                </div>
+
+                <div class="pwc-text-center">
+                    <button id="generate-customer" class="pwc-btn pwc-btn-primary pwc-btn-lg" style="width: 100%; max-width: 400px;" disabled>
+                        <i class="fas fa-magic"></i>
+                        AI 가상고객 생성
+                    </button>
+                    <p style="font-size: 0.875rem; color: var(--pwc-gray-600); margin-top: var(--spacing-md);">
+                        딥리서치와 RFP 분석을 완료한 후 생성 가능합니다.
+                    </p>
+                </div>
+
+                <!-- 생성된 고객 결과 -->
+                <div id="generated-customer" class="pwc-alert pwc-alert-success" style="display: none; margin-top: var(--spacing-xl);">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-md); word-break: keep-all;">
+                        <i class="fas fa-user-check" style="margin-right: var(--spacing-xs);"></i>
+                        AI 가상고객 생성 완료
+                    </h4>
+                    <div id="customer-persona" style="margin-top: var(--spacing-lg);">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+                    <div class="pwc-text-center" style="margin-top: var(--spacing-xl);">
+                        <button onclick="window.location.href='/proposal-evaluation'" class="pwc-btn pwc-btn-primary pwc-btn-lg">
+                            <i class="fas fa-arrow-right"></i>
+                            제안서 평가 시작
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/customer-generation.js"></script>
@@ -1435,147 +1499,170 @@ app.get('/presentation-evaluation', (c) => {
                 </div>
 
                 <!-- 미디어 접근 권한 요청 -->
-                <div id="media-setup" class="text-center py-8">
-                    <i class="fas fa-camera text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600 mb-6">발표 녹화를 위해 카메라와 마이크 권한이 필요합니다.</p>
+                <div id="media-setup" class="pwc-text-center" style="padding: var(--spacing-3xl) 0;">
+                    <i class="fas fa-video-camera" style="font-size: 4rem; color: var(--pwc-gray-400); margin-bottom: var(--spacing-xl);"></i>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); word-break: keep-all;">발표 녹화를 위해 미디어 권한이 필요합니다</h3>
+                    <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-xl); word-break: keep-all;">카메라와 마이크 접근을 허용해주세요. WebRTC를 통해 실시간 녹화와 STT 분석을 진행합니다.</p>
                     
-                    <div class="space-x-4">
-                        <button id="request-media" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-play mr-2"></i>카메라/마이크 시작
+                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
+                        <button id="request-media" class="pwc-btn pwc-btn-primary">
+                            <i class="fas fa-video"></i>
+                            카메라/마이크 시작
                         </button>
                         
-                        <button id="demo-presentation-eval" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-magic mr-2"></i>데모 평가 실행
+                        <button id="demo-presentation-eval" class="pwc-btn pwc-btn-secondary">
+                            <i class="fas fa-magic"></i>
+                            데모 평가 실행
                         </button>
                     </div>
                     
-                    <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                        <p class="text-sm text-blue-800">
-                            <i class="fas fa-info-circle mr-1"></i>
+                    <div class="pwc-alert pwc-alert-info">
+                        <p style="word-break: keep-all;">
+                            <i class="fas fa-info-circle" style="margin-right: var(--spacing-xs);"></i>
                             <strong>데모 모드:</strong> 샘플 발표 데이터를 이용하여 즉시 평가 결과를 확인할 수 있습니다.
                         </p>
                     </div>
                 </div>
 
                 <!-- 비디오 프리뷰 -->
-                <div id="video-preview" class="hidden">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div id="video-preview" style="display: none; margin-top: var(--spacing-xl);">
+                    <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-xl);">
                         <div>
-                            <h3 class="font-medium text-gray-900 mb-3">비디오 프리뷰</h3>
-                            <div class="relative bg-gray-900 rounded-lg overflow-hidden">
-                                <video id="preview-video" autoplay muted class="w-full h-48 object-cover"></video>
-                                <div id="recording-indicator" class="hidden absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-sm recording">
-                                    <i class="fas fa-circle mr-1"></i>녹화 중
+                            <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); word-break: keep-all;">
+                                <i class="fas fa-video" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                                비디오 프리뷰
+                            </h4>
+                            <div style="position: relative; background: var(--pwc-gray-900); border-radius: var(--radius-lg); overflow: hidden;">
+                                <video id="preview-video" autoplay muted style="width: 100%; height: 240px; object-fit: cover;"></video>
+                                <div id="recording-indicator" style="display: none; position: absolute; top: var(--spacing-sm); left: var(--spacing-sm); background: var(--pwc-error); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: 0.875rem;" class="recording">
+                                    <i class="fas fa-circle" style="margin-right: var(--spacing-xs);"></i>녹화 중
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <h3 class="font-medium text-gray-900 mb-3">음성 레벨</h3>
-                            <div class="bg-gray-100 p-4 rounded-lg">
-                                <div class="mb-2 text-sm text-gray-600">마이크 입력</div>
-                                <div class="w-full bg-gray-300 rounded-full h-3">
-                                    <div id="audio-level" class="bg-green-500 h-3 rounded-full transition-all duration-100" style="width: 0%"></div>
+                            <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); word-break: keep-all;">
+                                <i class="fas fa-microphone" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                                음성 레벨 모니터
+                            </h4>
+                            <div style="background: var(--pwc-gray-100); padding: var(--spacing-lg); border-radius: var(--radius-lg);">
+                                <div style="margin-bottom: var(--spacing-sm); font-size: 0.875rem; color: var(--pwc-gray-700); word-break: keep-all;">마이크 입력 레벨</div>
+                                <div style="width: 100%; background: var(--pwc-gray-300); border-radius: 10px; height: 12px; overflow: hidden;">
+                                    <div id="audio-level" style="background: linear-gradient(90deg, var(--pwc-success), var(--pwc-warning)); height: 100%; border-radius: 10px; transition: width 0.1s ease; width: 0%;"></div>
                                 </div>
-                                <div class="mt-2 text-xs text-gray-500">소리를 내보세요. 초록색 바가 움직이면 정상입니다.</div>
+                                <div style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">소리를 내보세요. 음성이 인식되면 바가 움직입니다.</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- 녹화 컨트롤 -->
-                    <div class="mt-6 text-center space-x-4">
-                        <button id="start-recording" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-record-vinyl mr-2"></i>녹화 시작
+                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-md); margin-top: var(--spacing-xl);">
+                        <button id="start-recording" style="background: var(--pwc-error); color: var(--pwc-white); border: none; padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fas fa-record-vinyl" style="margin-right: var(--spacing-sm);"></i>녹화 시작
                         </button>
-                        <button id="stop-recording" class="hidden bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-stop mr-2"></i>녹화 중지
+                        <button id="stop-recording" style="display: none; background: var(--pwc-gray-600); color: var(--pwc-white); border: none; padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fas fa-stop" style="margin-right: var(--spacing-sm);"></i>녹화 중지
                         </button>
-                        <button id="demo-presentation-eval" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                            <i class="fas fa-rocket mr-2"></i>데모 평가
+                        <button id="demo-presentation-eval-alt" class="pwc-btn pwc-btn-secondary">
+                            <i class="fas fa-rocket"></i>
+                            데모 평가
                         </button>
                     </div>
 
                     <!-- 녹화 시간 표시 -->
-                    <div id="recording-timer" class="hidden mt-4 text-center">
-                        <div class="text-2xl font-mono text-red-600" id="timer-display">00:00</div>
-                        <div class="text-sm text-gray-600">녹화 시간</div>
+                    <div id="recording-timer" class="pwc-text-center" style="display: none; margin-top: var(--spacing-lg);">
+                        <div style="font-size: 2rem; font-family: monospace; color: var(--pwc-error); font-weight: 700; margin-bottom: var(--spacing-sm);" id="timer-display">00:00</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">녹화 시간</div>
                     </div>
                 </div>
             </div>
 
             <!-- 실시간 STT 결과 -->
-            <div id="stt-section" class="hidden bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-microphone-alt mr-2 text-blue-600"></i>실시간 음성 인식 (STT)
-                </h2>
-                
-                <div class="bg-gray-50 rounded-lg p-4 min-h-32">
-                    <div class="text-sm text-gray-500 mb-2">인식된 텍스트:</div>
-                    <div id="stt-text" class="text-gray-900 leading-relaxed">
-                        음성 인식을 시작하려면 녹화를 시작하세요...
-                    </div>
+            <div id="stt-section" class="hidden pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-microphone-alt" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>실시간 음성 인식 (STT)
+                    </h2>
                 </div>
+                <div class="pwc-card-content">
+                    <div style="background: var(--neutral-50); border: 2px solid var(--neutral-200); border-radius: var(--border-radius-md); padding: var(--spacing-lg); min-height: 120px; margin-bottom: var(--spacing-lg);">
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: var(--spacing-sm); font-weight: 500;">인식된 텍스트:</div>
+                        <div id="stt-text" style="color: var(--text-color); line-height: 1.6; font-family: var(--font-mono); font-size: 0.95rem; word-break: keep-all; word-wrap: break-word;">
+                            음성 인식을 시작하려면 녹화를 시작하세요...
+                        </div>
+                    </div>
 
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div class="text-center p-3 bg-blue-50 rounded">
-                        <div class="font-medium text-blue-900">말속도</div>
-                        <div id="speech-speed" class="text-blue-600">- WPM</div>
-                    </div>
-                    <div class="text-center p-3 bg-green-50 rounded">
-                        <div class="font-medium text-green-900">휴지 빈도</div>
-                        <div id="pause-frequency" class="text-green-600">- 회/분</div>
-                    </div>
-                    <div class="text-center p-3 bg-yellow-50 rounded">
-                        <div class="font-medium text-yellow-900">군더더기어</div>
-                        <div id="filler-words" class="text-yellow-600">- 개</div>
+                    <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-md);">
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                            <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">말속도</div>
+                            <div id="speech-speed" style="font-size: 1.25rem; font-weight: 700;">- WPM</div>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--success-color-light), var(--success-color)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                            <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">휴지 빈도</div>
+                            <div id="pause-frequency" style="font-size: 1.25rem; font-weight: 700;">- 회/분</div>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-md); background: linear-gradient(135deg, var(--pwc-orange-light), var(--pwc-orange)); border-radius: var(--border-radius-md); color: var(--pwc-white);">
+                            <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">군더더기어</div>
+                            <div id="filler-words" style="font-size: 1.25rem; font-weight: 700;">- 개</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 평가 결과 -->
-            <div id="evaluation-results" class="hidden bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-chart-line mr-2 text-green-600"></i>발표 평가 결과
-                </h2>
-
-                <!-- 점수 차트 -->
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-600" id="clarity-score">-</div>
-                        <div class="text-sm font-medium text-blue-800">명확성</div>
-                    </div>
-                    <div class="text-center p-4 bg-green-50 rounded-lg">
-                        <div class="text-3xl font-bold text-green-600" id="expertise-score">-</div>
-                        <div class="text-sm font-medium text-green-800">전문성</div>
-                    </div>
-                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                        <div class="text-3xl font-bold text-yellow-600" id="persuasiveness-score">-</div>
-                        <div class="text-sm font-medium text-yellow-800">설득력</div>
-                    </div>
-                    <div class="text-center p-4 bg-indigo-50 rounded-lg">
-                        <div class="text-3xl font-bold text-indigo-600" id="logic-score">-</div>
-                        <div class="text-sm font-medium text-indigo-800">논리성</div>
-                    </div>
-                    <div class="text-center p-4 bg-pink-50 rounded-lg">
-                        <div class="text-3xl font-bold text-pink-600" id="creativity-score">-</div>
-                        <div class="text-sm font-medium text-pink-800">창의성</div>
-                    </div>
-                    <div class="text-center p-4 bg-red-50 rounded-lg">
-                        <div class="text-3xl font-bold text-red-600" id="credibility-score">-</div>
-                        <div class="text-sm font-medium text-red-800">신뢰성</div>
-                    </div>
+            <div id="evaluation-results" class="hidden pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-chart-line" style="color: var(--success-color); margin-right: var(--spacing-sm);"></i>발표 평가 결과
+                    </h2>
                 </div>
+                <div class="pwc-card-content">
+                    <!-- 점수 차트 -->
+                    <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="clarity-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">명확성</div>
+                            <i class="fas fa-eye" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--success-color-light), var(--success-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="expertise-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">전문성</div>
+                            <i class="fas fa-graduation-cap" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--pwc-orange-light), var(--pwc-orange)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="persuasiveness-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">설득력</div>
+                            <i class="fas fa-handshake" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--info-color-light), var(--info-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="logic-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">논리성</div>
+                            <i class="fas fa-brain" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--warning-color-light), var(--warning-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="creativity-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">창의성</div>
+                            <i class="fas fa-lightbulb" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                        <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, var(--error-color-light), var(--error-color)); border-radius: var(--border-radius-lg); color: var(--pwc-white); position: relative; overflow: hidden;">
+                            <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: var(--spacing-xs);" id="credibility-score">-</div>
+                            <div style="font-weight: 600; font-size: 0.95rem;">신뢰성</div>
+                            <i class="fas fa-shield-alt" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); opacity: 0.3; font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
 
-                <!-- 총점 -->
-                <div class="text-center p-6 bg-gray-50 rounded-lg mb-8">
-                    <div class="text-4xl font-bold text-gray-900" id="total-score">-</div>
-                    <div class="text-lg text-gray-600">총점 (100점 만점)</div>
-                </div>
+                    <!-- 총점 -->
+                    <div style="text-align: center; padding: var(--spacing-2xl); background: linear-gradient(135deg, var(--neutral-100), var(--neutral-50)); border: 3px solid var(--pwc-orange); border-radius: var(--border-radius-xl); margin-bottom: var(--spacing-xl); position: relative; overflow: hidden;">
+                        <div style="font-size: 4rem; font-weight: 700; color: var(--pwc-navy); margin-bottom: var(--spacing-sm);" id="total-score">-</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy);">총점 (100점 만점)</div>
+                        <i class="fas fa-trophy" style="position: absolute; top: var(--spacing-md); right: var(--spacing-md); color: var(--pwc-orange); font-size: 2rem; opacity: 0.3; animation: pulse 2s infinite;"></i>
+                    </div>
 
-                <!-- 다음 단계 버튼 -->
-                <div class="text-center">
-                    <button onclick="window.location.href='/results'" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors">
-                        <i class="fas fa-chart-radar mr-2"></i>통합 결과 보기
-                    </button>
+                    <!-- 다음 단계 버튼 -->
+                    <div class="pwc-text-center">
+                        <button onclick="window.location.href='/results'" class="pwc-btn pwc-btn-primary pwc-btn-lg" style="display: inline-flex; align-items: center; gap: var(--spacing-sm); font-size: 1.125rem; padding: var(--spacing-lg) var(--spacing-2xl);">
+                            <i class="fas fa-chart-radar"></i>통합 결과 보기
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1654,298 +1741,279 @@ app.get('/results', (c) => {
             <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">6대 지표별 상세 분석</h2>
                 
-                <!-- 차트 컨테이너 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                    <div class="flex justify-center">
-                        <div style="position: relative; height: 400px; width: 400px;">
-                            <canvas id="radarChart"></canvas>
-                        </div>
-                    </div>
+                    <!-- 차트 컨테이너 -->
+                    <div class="pwc-grid" style="grid-template-columns: 1fr; gap: var(--spacing-xl); align-items: center;">
+                        <div class="pwc-grid" style="grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); align-items: center;" data-responsive="lg">
+                            <div class="pwc-text-center">
+                                <div style="position: relative; height: 400px; width: 400px; margin: 0 auto; background: var(--neutral-50); border-radius: 50%; padding: var(--spacing-lg); box-shadow: var(--shadow-lg);">
+                                    <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
                     
-                    <!-- 지표별 상세 비교표 -->
-                    <div class="space-y-4">
-                        <div class="border border-gray-200 rounded-lg overflow-hidden">
-                            <table class="w-full">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-900">지표</th>
-                                        <th class="px-4 py-2 text-center text-sm font-medium text-blue-600">제안서</th>
-                                        <th class="px-4 py-2 text-center text-sm font-medium text-purple-600">발표</th>
-                                        <th class="px-4 py-2 text-center text-sm font-medium text-gray-900">차이</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">명확성</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">전문성</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                50점 <i class="fas fa-star ml-1 text-yellow-500"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                50점 <i class="fas fa-star ml-1 text-yellow-500"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">설득력</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">논리성</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                40점
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">창의성</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                30점 <i class="fas fa-exclamation-triangle ml-1"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                30점 <i class="fas fa-exclamation-triangle ml-1"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 font-medium text-gray-900">신뢰성</td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                50점 <i class="fas fa-star ml-1 text-yellow-500"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                50점 <i class="fas fa-star ml-1 text-yellow-500"></i>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center">
-                                            <span class="text-gray-500">0.0</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <!-- 통계 요약 -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-50 rounded-lg p-3">
-                                <div class="text-sm text-blue-600 font-medium">제안서 평균</div>
-                                <div class="text-xl font-bold text-blue-800">40점</div>
+                            <!-- 지표별 상세 비교표 -->
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                                <div class="pwc-table-container">
+                                    <table class="pwc-table">
+                                        <thead style="background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-orange-light));">
+                                            <tr>
+                                                <th style="padding: var(--spacing-md); text-align: left; font-weight: 600; color: var(--pwc-white); word-break: keep-all;">지표</th>
+                                                <th style="padding: var(--spacing-md); text-align: center; font-weight: 600; color: var(--pwc-white); word-break: keep-all;">제안서</th>
+                                                <th style="padding: var(--spacing-md); text-align: center; font-weight: 600; color: var(--pwc-white); word-break: keep-all;">발표</th>
+                                                <th style="padding: var(--spacing-md); text-align: center; font-weight: 600; color: var(--pwc-white); word-break: keep-all;">차이</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="background: var(--pwc-white);">
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">명확성</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--pwc-blue-light); color: var(--pwc-blue);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--info-color-light); color: var(--info-color);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">전문성</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--success-color-light); color: var(--success-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--success-color-light); color: var(--success-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">설득력</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--pwc-blue-light); color: var(--pwc-blue);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--info-color-light); color: var(--info-color);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">논리성</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--pwc-blue-light); color: var(--pwc-blue);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--info-color-light); color: var(--info-color);">40점</span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">창의성</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--warning-color-light); color: var(--warning-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">30점 <i class="fas fa-exclamation-triangle"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--warning-color-light); color: var(--warning-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">30점 <i class="fas fa-exclamation-triangle"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid var(--neutral-200);">
+                                                <td style="padding: var(--spacing-md); font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">신뢰성</td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--success-color-light); color: var(--success-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center;">
+                                                    <span class="pwc-badge" style="background: var(--success-color-light); color: var(--success-color); display: inline-flex; align-items: center; gap: var(--spacing-xs);">50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                                                </td>
+                                                <td style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">0.0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- 통계 요약 -->
+                                <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-md);">
+                                    <div style="background: linear-gradient(135deg, var(--pwc-blue-light), var(--pwc-blue)); color: var(--pwc-white); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: var(--spacing-xs); opacity: 0.9;">제안서 평균</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700;">40점</div>
+                                    </div>
+                                    <div style="background: linear-gradient(135deg, var(--info-color-light), var(--info-color)); color: var(--pwc-white); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: var(--spacing-xs); opacity: 0.9;">발표 평균</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700;">40점</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 지표별 성과 분석 -->
+                                <div style="background: var(--neutral-50); border-radius: var(--border-radius-md); padding: var(--spacing-lg); border: 2px solid var(--pwc-orange-light);">
+                                    <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);"><i class="fas fa-analytics" style="color: var(--pwc-orange);"></i>성과 분석</h4>
+                                    <ul style="display: flex; flex-direction: column; gap: var(--spacing-sm); font-size: 0.9rem; color: var(--text-color);">
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
+                                            <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                                            <strong>최고 점수:</strong> 전문성, 신뢰성 (50점)
+                                        </li>
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
+                                            <i class="fas fa-chart-line" style="color: var(--warning-color);"></i>
+                                            <strong>개선 필요:</strong> 창의성 (30점)
+                                        </li>
+                                        <li style="display: flex; align-items: center; gap: var(--spacing-sm); word-break: keep-all;">
+                                            <i class="fas fa-balance-scale" style="color: var(--pwc-blue);"></i>
+                                            <strong>평가 일관성:</strong> 제안서와 발표 점수 차이 없음
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="bg-purple-50 rounded-lg p-3">
-                                <div class="text-sm text-purple-600 font-medium">발표 평균</div>
-                                <div class="text-xl font-bold text-purple-800">40점</div>
-                            </div>
-                        </div>
-                        
-                        <!-- 지표별 성과 분석 -->
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <h4 class="font-medium text-gray-900 mb-2">성과 분석</h4>
-                            <ul class="space-y-1 text-sm text-gray-700">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                    <strong>최고 점수:</strong> 전문성, 신뢰성 (50점)
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-chart-line text-yellow-500 mr-2"></i>
-                                    <strong>개선 필요:</strong> 창의성 (30점)
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
-                                    <strong>평가 일관성:</strong> 제안서와 발표 점수 차이 없음
-                                </li>
-                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- 성과 요약 및 진행률 바 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">지표별 성과 요약</h2>
-                
-                <div class="space-y-4">
-                    <!-- 명확성 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">명확성</span>
-                            <span class="text-sm text-gray-600">40 / 50점</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 전문성 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">전문성</span>
-                            <span class="text-sm text-green-600 font-semibold">50 / 50점 ⭐</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 설득력 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">설득력</span>
-                            <span class="text-sm text-gray-600">40 / 50점</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 논리성 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">논리성</span>
-                            <span class="text-sm text-gray-600">40 / 50점</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 창의성 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">창의성</span>
-                            <span class="text-sm text-yellow-600">30 / 50점 ⚠️</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 60%"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 신뢰성 -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium text-gray-900">신뢰성</span>
-                            <span class="text-sm text-green-600 font-semibold">50 / 50점 ⭐</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
+            <div class="pwc-card" style="margin-bottom: var(--spacing-xl);">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-chart-bar" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                        지표별 성과 요약
+                    </h2>
                 </div>
-                
-                <!-- 성과 등급 -->
-                <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-l-4 border-green-500">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-trophy text-green-500 text-xl"></i>
+                <div class="pwc-card-content">
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                        <!-- 명확성 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">명확성</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">40 / 50점</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--pwc-blue), var(--pwc-orange)); border-radius: 4px; width: 80%; transition: width 0.3s ease;"></div>
+                            </div>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800">
-                                전체 성과 등급: <strong>우수 (B+급)</strong>
-                            </p>
-                            <p class="text-sm text-green-700">
-                                평균 40점(100점 만점)으로 높은 수준의 제안 품질을 보여주었습니다.
-                            </p>
+                        
+                        <!-- 전문성 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">전문성</span>
+                                <span style="color: var(--success-color); font-weight: 700; display: flex; align-items: center; gap: var(--spacing-xs);">50 / 50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--success-color), var(--pwc-orange)); border-radius: 4px; width: 100%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 설득력 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">설득력</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">40 / 50점</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--pwc-blue), var(--pwc-orange)); border-radius: 4px; width: 80%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 논리성 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">논리성</span>
+                                <span style="color: var(--text-muted); font-weight: 500;">40 / 50점</span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--pwc-blue), var(--pwc-orange)); border-radius: 4px; width: 80%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 창의성 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">창의성</span>
+                                <span style="color: var(--warning-color); font-weight: 600; display: flex; align-items: center; gap: var(--spacing-xs);">30 / 50점 <i class="fas fa-exclamation-triangle"></i></span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--warning-color), var(--pwc-orange)); border-radius: 4px; width: 60%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- 신뢰성 -->
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">신뢰성</span>
+                                <span style="color: var(--success-color); font-weight: 700; display: flex; align-items: center; gap: var(--spacing-xs);">50 / 50점 <i class="fas fa-star" style="color: var(--pwc-orange);"></i></span>
+                            </div>
+                            <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--success-color), var(--pwc-orange)); border-radius: 4px; width: 100%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 성과 등급 -->
+                    <div style="margin-top: var(--spacing-xl); padding: var(--spacing-lg); background: linear-gradient(135deg, var(--success-color-light), var(--pwc-blue-light)); border-radius: var(--border-radius-lg); border-left: 6px solid var(--success-color); position: relative; overflow: hidden;">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md); z-index: 2; position: relative;">
+                            <div style="flex-shrink: 0;">
+                                <i class="fas fa-trophy" style="color: var(--success-color); font-size: 1.5rem; animation: pulse 2s infinite;"></i>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">
+                                    전체 성과 등급: <strong style="color: var(--success-color);">우수 (B+급)</strong>
+                                </p>
+                                <p style="color: var(--text-color); line-height: 1.4; word-break: keep-all;">
+                                    평균 40점(100점 만점)으로 높은 수준의 제안 품질을 보여주었습니다.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); font-size: 3rem; color: var(--success-color); opacity: 0.1;">
+                            <i class="fas fa-award"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 종합 피드백 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">종합 피드백</h2>
-                
-                <div class="space-y-6">
-                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <h3 class="font-medium text-green-900 mb-2">
-                            <i class="fas fa-thumbs-up mr-2"></i>강점
-                        </h3>
-                        <p class="text-green-800">
-                            화학산업 전문성과 글로벌 ESG 대응 역량이 뛰어나며, 
-                            안정적이고 체계적인 실행 방안을 제시했습니다. 
-                            PwC의 브랜드 신뢰도와 실현가능성이 높게 평가됩니다.
-                        </p>
-                    </div>
-                    
-                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <h3 class="font-medium text-yellow-900 mb-2">
-                            <i class="fas fa-lightbulb mr-2"></i>개선 사항
-                        </h3>
-                        <p class="text-yellow-800">
-                            창의적이고 혁신적인 차별화 요소를 더 강화하면 좋겠습니다. 
-                            기술적 세부사항의 명확성을 높이고, 
-                            더욱 구체적인 실행 타임라인을 제시해주세요.
-                        </p>
-                    </div>
-                    
-                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h3 class="font-medium text-blue-900 mb-2">
-                            <i class="fas fa-star mr-2"></i>총평
-                        </h3>
-                        <p class="text-blue-800">
-                            금고석유화학의 ESG 경영과 DX 니즈를 정확히 파악한 우수한 제안입니다. 
-                            화학산업 전문성과 글로벌 경험을 바탕으로 한 안정적 실행력이 돋보이며, 
-                            장기적 파트너십 구축에 적합한 신뢰할 수 있는 제안으로 평가됩니다.
-                        </p>
+            <div class="pwc-card" style="margin-bottom: var(--spacing-xl);">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-comment-dots" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        종합 피드백
+                    </h2>
+                </div>
+                <div class="pwc-card-content">
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                        <div class="pwc-alert pwc-alert-success" style="padding: var(--spacing-lg); border-radius: var(--border-radius-md);">
+                            <h3 style="font-weight: 600; color: var(--success-color); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-thumbs-up"></i>강점
+                            </h3>
+                            <p style="color: var(--success-color); line-height: 1.6; word-break: keep-all;">
+                                화학산업 전문성과 글로벌 ESG 대응 역량이 뛰어나며, 
+                                안정적이고 체계적인 실행 방안을 제시했습니다. 
+                                PwC의 브랜드 신뢰도와 실현가능성이 높게 평가됩니다.
+                            </p>
+                        </div>
+                        
+                        <div class="pwc-alert pwc-alert-warning" style="padding: var(--spacing-lg); border-radius: var(--border-radius-md);">
+                            <h3 style="font-weight: 600; color: var(--warning-color); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-lightbulb"></i>개선 사항
+                            </h3>
+                            <p style="color: var(--warning-color); line-height: 1.6; word-break: keep-all;">
+                                창의적이고 혁신적인 차별화 요소를 더 강화하면 좋겠습니다. 
+                                기술적 세부사항의 명확성을 높이고, 
+                                더욱 구체적인 실행 타임라인을 제시해주세요.
+                            </p>
+                        </div>
+                        
+                        <div class="pwc-alert pwc-alert-info" style="padding: var(--spacing-lg); border-radius: var(--border-radius-md);">
+                            <h3 style="font-weight: 600; color: var(--info-color); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-star"></i>총평
+                            </h3>
+                            <p style="color: var(--info-color); line-height: 1.6; word-break: keep-all;">
+                                금고석유화학의 ESG 경영과 DX 니즈를 정확히 파악한 우수한 제안입니다. 
+                                화학산업 전문성과 글로벌 경험을 바탕으로 한 안정적 실행력이 돋보이며, 
+                                장기적 파트너십 구축에 적합한 신뢰할 수 있는 제안으로 평가됩니다.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 액션 버튼 -->
-            <div class="text-center space-x-4">
-                <button onclick="window.location.href='/'" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors">
-                    <i class="fas fa-home mr-2"></i>메인으로 돌아가기
+            <div class="pwc-text-center" style="display: flex; gap: var(--spacing-lg); justify-content: center; flex-wrap: wrap;">
+                <button onclick="window.location.href='/'" class="pwc-btn pwc-btn-primary pwc-btn-lg" style="display: inline-flex; align-items: center; gap: var(--spacing-sm); font-size: 1.125rem; padding: var(--spacing-lg) var(--spacing-2xl);">
+                    <i class="fas fa-home"></i>메인으로 돌아가기
                 </button>
-                <button onclick="downloadReport()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors">
-                    <i class="fas fa-download mr-2"></i>PDF 리포트 다운로드
+                <button onclick="downloadReport()" class="pwc-btn pwc-btn-success pwc-btn-lg" style="display: inline-flex; align-items: center; gap: var(--spacing-sm); font-size: 1.125rem; padding: var(--spacing-lg) var(--spacing-2xl);">
+                    <i class="fas fa-download"></i>PDF 리포트 다운로드
                 </button>
             </div>
         </div>
