@@ -159,11 +159,7 @@ class CustomerGenerationApp {
       const fileType = file.type.includes('pdf') ? 'pdf' : 
                      file.type.includes('wordprocessing') ? 'docx' : 'txt'
 
-      const response = await axios.post('/api/customers/rfp-analysis', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const response = await axios.post('/api/customers/rfp-analysis', formData)
 
       if (response.data.success) {
         this.rfpAnalysisData = response.data.data

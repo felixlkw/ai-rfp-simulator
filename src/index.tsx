@@ -385,12 +385,24 @@ app.post('/api/customers/deep-research', async (c) => {
 
 app.post('/api/customers/rfp-analysis', async (c) => {
   try {
-    const formData = await c.req.formData()
     const { env } = c
+    const contentType = c.req.header('content-type') || ''
     
-    const rfpFile = formData.get('rfp_file') as File
-    const fileName = formData.get('file_name') as string || rfpFile.name
-    const parsingMode = formData.get('parsing_mode') as string || 'detailed'
+    let rfpFile, fileName, parsingMode
+    
+    if (contentType.includes('multipart/form-data')) {
+      // FormData 처리
+      const formData = await c.req.formData()
+      rfpFile = formData.get('rfp_file') as File
+      fileName = formData.get('file_name') as string || rfpFile.name
+      parsingMode = formData.get('parsing_mode') as string || 'detailed'
+    } else {
+      // JSON 처리 (기본값 또는 폴백)
+      return c.json({
+        success: false,
+        error: 'multipart/form-data Content-Type이 필요합니다'
+      }, 400)
+    }
     
     if (!rfpFile) {
       return c.json({
