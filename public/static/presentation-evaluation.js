@@ -39,20 +39,39 @@ class PresentationEvaluationApp {
       setTimeout(() => {
         console.log('자동 데모 테스트 실행')
         this.runDemoEvaluation()
-      }, 3000)
+      }, 2000)
     }
+    
+    // 5초 후 버튼 상태 확인 (디버깅용)
+    setTimeout(() => {
+      const requestMediaButton = document.getElementById('request-media')
+      const demoButton = document.getElementById('demo-presentation-eval')
+      console.log('5초 후 버튼 상태 확인:')
+      console.log('request-media 버튼:', requestMediaButton ? '존재' : '없음')
+      console.log('demo-presentation-eval 버튼:', demoButton ? '존재' : '없음')
+    }, 5000)
   }
 
   setupEventListeners() {
+    console.log('setupEventListeners 시작')
+    
     // 고객 선택
     document.getElementById('customer-select')?.addEventListener('change', (e) => {
+      console.log('고객 선택됨:', e.target.value)
       this.selectCustomer(e.target.value)
     })
 
     // 미디어 요청
-    document.getElementById('request-media')?.addEventListener('click', () => {
-      this.requestMediaAccess()
-    })
+    const requestMediaButton = document.getElementById('request-media')
+    if (requestMediaButton) {
+      console.log('request-media 버튼 발견됨')
+      requestMediaButton.addEventListener('click', () => {
+        console.log('request-media 버튼 클릭됨')
+        this.requestMediaAccess()
+      })
+    } else {
+      console.error('request-media 버튼을 찾을 수 없습니다')
+    }
 
     // 녹화 컨트롤
     document.getElementById('start-recording')?.addEventListener('click', () => {
@@ -151,8 +170,22 @@ class PresentationEvaluationApp {
       this.setupAudioAnalysis(stream)
 
       // UI 업데이트
-      document.getElementById('media-setup').classList.add('hidden')
-      document.getElementById('video-preview').classList.remove('hidden')
+      console.log('UI 업데이트 시작')
+      const mediaSetup = document.getElementById('media-setup')
+      const videoPreviewSection = document.getElementById('video-preview')
+      
+      console.log('media-setup 요소:', mediaSetup)
+      console.log('video-preview 요소:', videoPreviewSection)
+      
+      if (mediaSetup) {
+        mediaSetup.classList.add('hidden')
+        console.log('media-setup 숨김 처리 완료')
+      }
+      
+      if (videoPreviewSection) {
+        videoPreviewSection.classList.remove('hidden')
+        console.log('video-preview 표시 처리 완료')
+      }
 
       this.hideLoading()
       this.showSuccessMessage('카메라와 마이크가 성공적으로 연결되었습니다!')
@@ -162,13 +195,17 @@ class PresentationEvaluationApp {
       this.hideLoading()
       
       let errorMessage = '카메라와 마이크 접근에 실패했습니다.'
+      let suggestion = '아래 "데모 평가 실행" 버튼으로 동일한 AI 평가를 체험해보세요!'
+      
       if (error.name === 'NotAllowedError') {
-        errorMessage = '카메라와 마이크 권한을 허용해주세요.'
+        errorMessage = '카메라와 마이크 권한이 거부되었습니다.'
       } else if (error.name === 'NotFoundError') {
         errorMessage = '카메라 또는 마이크를 찾을 수 없습니다.'
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = '미디어 장치가 사용 중입니다.'
       }
       
-      alert(errorMessage)
+      alert(`${errorMessage}\n\n💡 해결방법:\n1. 브라우저 새로고침 후 권한 "허용" 클릭\n2. Chrome 브라우저 사용 (권장)\n3. ${suggestion}`)
     }
   }
 
@@ -383,11 +420,13 @@ class PresentationEvaluationApp {
       }
       
       // UI 업데이트
-      document.getElementById('start-recording').classList.add('hidden')
-      document.getElementById('stop-recording').classList.remove('hidden')
-      document.getElementById('recording-indicator').classList.remove('hidden')
-      document.getElementById('recording-timer').classList.remove('hidden')
-      document.getElementById('stt-section').classList.remove('hidden')
+      console.log('녹화 시작 - UI 업데이트')
+      document.getElementById('start-recording')?.classList.add('hidden')
+      document.getElementById('stop-recording')?.classList.remove('hidden')
+      document.getElementById('recording-indicator')?.classList.remove('hidden')
+      document.getElementById('recording-timer')?.classList.remove('hidden')
+      document.getElementById('stt-section')?.classList.remove('hidden')
+      console.log('녹화 UI 업데이트 완료')
       
       // 타이머 시작
       this.startTimer()
@@ -419,9 +458,11 @@ class PresentationEvaluationApp {
       }
       
       // UI 업데이트
-      document.getElementById('start-recording').classList.remove('hidden')
-      document.getElementById('stop-recording').classList.add('hidden')
-      document.getElementById('recording-indicator').classList.add('hidden')
+      console.log('녹화 중지 - UI 업데이트')
+      document.getElementById('start-recording')?.classList.remove('hidden')
+      document.getElementById('stop-recording')?.classList.add('hidden')
+      document.getElementById('recording-indicator')?.classList.add('hidden')
+      console.log('녹화 중지 UI 업데이트 완료')
       
       this.showSuccessMessage('녹화가 완료되었습니다!')
       
@@ -677,6 +718,17 @@ window.testDemo = function() {
   if (window.presentationApp) {
     console.log('presentationApp 존재함')
     window.presentationApp.runDemoEvaluation()
+  } else {
+    console.error('presentationApp이 존재하지 않음')
+  }
+}
+
+// 미디어 접근 테스트 함수 
+window.testMediaAccess = function() {
+  console.log('미디어 접근 테스트 시작')
+  if (window.presentationApp) {
+    console.log('presentationApp 존재함, 미디어 접근 시도')
+    window.presentationApp.requestMediaAccess()
   } else {
     console.error('presentationApp이 존재하지 않음')
   }

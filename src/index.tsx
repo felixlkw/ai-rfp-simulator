@@ -1504,16 +1504,24 @@ app.get('/presentation-evaluation', (c) => {
                     <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); word-break: keep-all;">발표 녹화를 위해 미디어 권한이 필요합니다</h3>
                     <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-xl); word-break: keep-all;">카메라와 마이크 접근을 허용해주세요. WebRTC를 통해 실시간 녹화와 STT 분석을 진행합니다.</p>
                     
-                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
-                        <button id="request-media" class="pwc-btn pwc-btn-primary">
-                            <i class="fas fa-video"></i>
-                            카메라/마이크 시작
-                        </button>
+                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+                        <div style="text-align: center;">
+                            <button id="request-media" class="pwc-btn pwc-btn-primary">
+                                <i class="fas fa-video"></i>
+                                실시간 녹화 (WebRTC)
+                            </button>
+                            <div style="font-size: 0.875rem; color: var(--pwc-gray-600); margin-top: var(--spacing-xs); word-break: keep-all;">카메라/마이크 권한 필요</div>
+                        </div>
                         
-                        <button id="demo-presentation-eval" class="pwc-btn pwc-btn-secondary">
-                            <i class="fas fa-magic"></i>
-                            데모 평가 실행
-                        </button>
+                        <div style="display: flex; align-items: center; color: var(--pwc-gray-400); font-weight: bold;">또는</div>
+                        
+                        <div style="text-align: center;">
+                            <button id="demo-presentation-eval" class="pwc-btn pwc-btn-orange pwc-btn-lg">
+                                <i class="fas fa-rocket"></i>
+                                데모 평가 실행
+                            </button>
+                            <div style="font-size: 0.875rem; color: var(--pwc-orange); margin-top: var(--spacing-xs); word-break: keep-all; font-weight: 600;">권한 없이 즉시 체험!</div>
+                        </div>
                     </div>
                     
                     <div class="pwc-alert pwc-alert-info">
@@ -1522,10 +1530,17 @@ app.get('/presentation-evaluation', (c) => {
                             <strong>데모 모드:</strong> 샘플 발표 데이터를 이용하여 즉시 평가 결과를 확인할 수 있습니다.
                         </p>
                     </div>
+
+                    <div class="pwc-alert pwc-alert-warning" style="margin-top: var(--spacing-md);">
+                        <p style="word-break: keep-all;">
+                            <i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i>
+                            <strong>미디어 접근 문제 시:</strong> 브라우저가 카메라/마이크 권한을 차단했다면 <strong>"데모 평가 실행"</strong>으로 동일한 AI 평가를 체험할 수 있습니다.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- 비디오 프리뷰 -->
-                <div id="video-preview" style="display: none; margin-top: var(--spacing-xl);">
+                <div id="video-preview" class="hidden" style="margin-top: var(--spacing-xl);">
                     <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-xl);">
                         <div>
                             <h4 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-md); word-break: keep-all;">
@@ -1534,7 +1549,7 @@ app.get('/presentation-evaluation', (c) => {
                             </h4>
                             <div style="position: relative; background: var(--pwc-gray-900); border-radius: var(--radius-lg); overflow: hidden;">
                                 <video id="preview-video" autoplay muted style="width: 100%; height: 240px; object-fit: cover;"></video>
-                                <div id="recording-indicator" style="display: none; position: absolute; top: var(--spacing-sm); left: var(--spacing-sm); background: var(--pwc-error); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: 0.875rem;" class="recording">
+                                <div id="recording-indicator" class="hidden recording" style="position: absolute; top: var(--spacing-sm); left: var(--spacing-sm); background: var(--pwc-error); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: 0.875rem;">
                                     <i class="fas fa-circle" style="margin-right: var(--spacing-xs);"></i>녹화 중
                                 </div>
                             </div>
@@ -1559,7 +1574,7 @@ app.get('/presentation-evaluation', (c) => {
                         <button id="start-recording" style="background: var(--pwc-error); color: var(--pwc-white); border: none; padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
                             <i class="fas fa-record-vinyl" style="margin-right: var(--spacing-sm);"></i>녹화 시작
                         </button>
-                        <button id="stop-recording" style="display: none; background: var(--pwc-gray-600); color: var(--pwc-white); border: none; padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                        <button id="stop-recording" class="hidden" style="background: var(--pwc-gray-600); color: var(--pwc-white); border: none; padding: var(--spacing-lg) var(--spacing-xl); border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
                             <i class="fas fa-stop" style="margin-right: var(--spacing-sm);"></i>녹화 중지
                         </button>
                         <button id="demo-presentation-eval-alt" class="pwc-btn pwc-btn-secondary">
@@ -1569,7 +1584,7 @@ app.get('/presentation-evaluation', (c) => {
                     </div>
 
                     <!-- 녹화 시간 표시 -->
-                    <div id="recording-timer" class="pwc-text-center" style="display: none; margin-top: var(--spacing-lg);">
+                    <div id="recording-timer" class="hidden pwc-text-center" style="margin-top: var(--spacing-lg);">
                         <div style="font-size: 2rem; font-family: monospace; color: var(--pwc-error); font-weight: 700; margin-bottom: var(--spacing-sm);" id="timer-display">00:00</div>
                         <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">녹화 시간</div>
                     </div>
@@ -1668,7 +1683,7 @@ app.get('/presentation-evaluation', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/presentation-evaluation.js?v=3.0"></script>
+        <script src="/static/presentation-evaluation.js?v=4.0"></script>
     </body>
     </html>
   `)
