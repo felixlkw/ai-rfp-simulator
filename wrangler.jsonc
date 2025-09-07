@@ -1,14 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "webapp",
+  "name": "ai-rfp-simulator",
   "compatibility_date": "2025-09-03",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "webapp-production", 
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_name": "ai-rfp-simulator-db", 
+      "database_id": "e60eb4f4-db4c-462b-9618-6f5be9202b40"
     }
   ]
 }
