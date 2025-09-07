@@ -42,70 +42,86 @@ app.use('/static/*', serveStatic({ root: './public' }))
 
 // === 헬퍼 함수들 ===
 
-// 기본 RFP 분석 (텍스트 기반 키워드 매칭)
-async function generateBasicRfpAnalysis(text: string, fileName: string) {
-  const keywords = {
-    project_name: ['\ud504\ub85c\uc81d\ud2b8', '\uc0ac\uc5c5', '\uacfc\uc81c', '\uc9c0\uc6d0', '\uacfc\uc81c\uba85'],
-    budget_range: ['\uc608\uc0b0', '\ube44\uc6a9', '\uae08\uc561', '\uc6d0', '\ub9cc\uc6d0'],
-    timeline: ['\uae30\uac04', '\uc77c\uc815', '\uc644\ub8cc', '\uc885\ub8cc', '\uac1c\uc2dc', '\uc2dc\uc791'],
-    requirements: ['\uc694\uad6c\uc0ac\ud56d', '\uc694\uad6c', '\ud544\uc218', '\ud544\uc694', '\uc911\uc694'],
-    deliverables: ['\uc0b0\ucd9c\ubb3c', '\uc81c\ucd9c\ubb3c', '\uacb0\uacfc\ubb3c', '\ubcf4\uace0\uc11c', '\ubb38\uc11c'],
-    technology: ['\uae30\uc220', '\uc2dc\uc2a4\ud15c', '\ub124\ud2b8\uc6cc\ud06c', 'IT', '\ub514\uc9c0\ud138'],
-    qualification: ['\uc790\uaca9', '\uacbd\ud5d8', '\ub2a5\ub825', '\uc804\ubb38\uc131', '\uc778\uc99d']
-  }
-
-  const result: any = {
-    project_name: '\ubbf8\uc9c0\uc815 \ud504\ub85c\uc81d\ud2b8',
-    budget_range: '\ubbf8\uc9c0\uc815',
-    timeline: '\ubbf8\uc9c0\uc815',
-    requirements: [],
-    deliverables: [],
-    technology_stack: [],
-    qualification_criteria: [],
-    evaluation_criteria: [],
-    company_info: {
-      name: '\ubbf8\uc9c0\uc815 \uae30\uc5c5',
-      industry: '\ubbf8\uc9c0\uc815',
-      size: '\ubbf8\uc9c0\uc815'
-    },
-    project_scope: '\ubbf8\uc9c0\uc815',
-    success_factors: [],
-    constraints: [],
-    stakeholders: [],
-    risk_factors: [],
-    innovation_level: '\ubcf4\ud1b5'
-  }
-
-  // 간\ub2e8\ud55c 키\uc6cc\ub4dc \ub9e4\uce6d \ub85c\uc9c1
-  const lines = text.split('\n')
+// NLP 기반 RFP 분석 (고도화된 키워드 추출 + 구조화)
+async function generateNLPRfpAnalysis(text: string, fileName: string) {
   
-  for (const line of lines) {
-    // \ud504\ub85c\uc81d\ud2b8\uba85 \ucd94\ucd9c
-    if (keywords.project_name.some(k => line.includes(k)) && line.length < 100) {
-      result.project_name = line.trim() || result.project_name
-    }
+  // 한국어 NLP 패턴 정의
+  const patterns = {
+    // 기본 정보 추출
+    project_name: /(?:프로젝트명?|사업명|과제명|프로젝트\s*명칭?)\s*[:：]\s*([^\n\r]{1,100})/gi,
+    client_company: /(?:발주기관|발주사|발주업체|기관명|회사명|업체명)\s*[:：]\s*([^\n\r]{1,50})/gi,
+    department: /(?:담당부서|담당팀|담당기관|부서명|팀명)\s*[:：]\s*([^\n\r]{1,50})/gi,
     
-    // \uc608\uc0b0 \uc815\ubcf4 \ucd94\ucd9c
-    if (keywords.budget_range.some(k => line.includes(k))) {
-      const budgetMatch = line.match(/([0-9,]+)\s*\ub9cc?\uc6d0/)
-      if (budgetMatch) {
-        result.budget_range = budgetMatch[0]
-      }
-    }
+    // 예산 및 기간
+    budget: /(?:예산|총예산|사업비|금액|비용)\s*[:：]?\s*([0-9,]+(?:\s*억|\s*만원|\s*원|만|억))/gi,
+    timeline: /(?:기간|사업기간|수행기간|프로젝트기간)\s*[:：]?\s*([0-9]+(?:\s*개월|\s*년|\s*주|\s*일))/gi,
+    start_date: /(?:시작일|개시일|착수일)\s*[:：]?\s*([0-9]{4}[-.]?[0-9]{1,2}[-.]?[0-9]{1,2})/gi,
+    end_date: /(?:종료일|완료일|납기일)\s*[:：]?\s*([0-9]{4}[-.]?[0-9]{1,2}[-.]?[0-9]{1,2})/gi,
     
-    // \uae30\uac04 \uc815\ubcf4
-    if (keywords.timeline.some(k => line.includes(k))) {
-      const timeMatch = line.match(/([0-9]+)\s*\uac1c\uc6d4|([0-9]+)\s*\uc8fc|([0-9]+)\s*\uc77c/)
-      if (timeMatch) {
-        result.timeline = timeMatch[0]
-      }
+    // 평가 기준
+    evaluation_criteria: /(?:평가기준|평가항목|심사기준)\s*[:：]?\s*([^.]{1,200})/gi,
+    
+    // 기술 요구사항
+    technical_requirements: /(?:기술요구사항|기술사양|필수기술|기술조건)\s*[:：]?\s*([^.]{1,300})/gi,
+    
+    // 제약사항
+    constraints: /(?:제약사항|제한사항|주의사항|특이사항)\s*[:：]?\s*([^.]{1,200})/gi
+  }
+  
+  // 정규식으로 정보 추출
+  const extractedData: any = {}
+  
+  for (const [key, pattern] of Object.entries(patterns)) {
+    const matches = [...text.matchAll(pattern)]
+    if (matches.length > 0) {
+      extractedData[key] = matches.map(m => m[1].trim()).filter(v => v.length > 0)
     }
   }
-
-  // \uae30\ubcf8 \uc694\uad6c\uc0ac\ud56d \ucd94\uac00
-  result.requirements = ['\uae30\uc220 \uc804\ubb38\uc131', '\ud504\ub85c\uc81d\ud2b8 \uacbd\ud5d8', '\uc608\uc0b0 \ud6a8\uc728\uc131']
-  result.deliverables = ['\uc81c\uc548\uc11c', '\uc0ac\uc5c5\uacc4\ud68d\uc11c', '\ucd5c\uc885 \ubcf4\uace0\uc11c']
-  result.technology_stack = ['\uc2dc\uc2a4\ud15c \uad6c\ucd95', '\ub370\uc774\ud130 \uc5f0\ub3d9', '\ubcf4\uc548 \uc2dc\uc2a4\ud15c']
+  
+  // 문장 단위 분석으로 추가 정보 추출
+  const sentences = text.split(/[.\n!?]/).filter(s => s.trim().length > 5)
+  
+  const requirements = []
+  const deliverables = []
+  const objectives = []
+  
+  for (const sentence of sentences) {
+    const trimmed = sentence.trim()
+    
+    // 요구사항 추출
+    if (/(?:요구|필요|필수|요구사항|해야|구현|개발|제공)/.test(trimmed)) {
+      requirements.push(trimmed.substring(0, 100))
+    }
+    
+    // 산출물 추출  
+    if (/(?:산출물|제출물|결과물|납품물|보고서|문서|시스템)/.test(trimmed)) {
+      deliverables.push(trimmed.substring(0, 100))
+    }
+    
+    // 목표 추출
+    if (/(?:목표|목적|달성|효과|기대|향상|개선)/.test(trimmed)) {
+      objectives.push(trimmed.substring(0, 100))
+    }
+  }
+  
+  // RFP 15속성 매핑
+  const result = {
+    client_company: extractedData.client_company?.[0] || '미지정 기업',
+    department: extractedData.department?.[0] || '미지정 부서',
+    project_background: text.length > 0 ? `RFP 문서 기반 프로젝트 배경 (${fileName})` : '정보 없음',
+    objectives: objectives.slice(0, 3).join('; ') || '프로젝트 목표 달성',
+    scope: requirements.slice(0, 3).join('; ') || '프로젝트 범위 정의',
+    timeline: extractedData.timeline?.[0] || '미지정 기간',
+    budget: extractedData.budget?.[0] || '미지정 예산',
+    evaluation_criteria: extractedData.evaluation_criteria?.[0] || '기술성, 경험, 가격 종합 평가',
+    technical_requirements: extractedData.technical_requirements?.[0] || requirements.slice(0, 2).join('; ') || '기술 요구사항 분석 필요',
+    constraints: extractedData.constraints?.[0] || '일반적인 프로젝트 제약사항 적용',
+    delivery_conditions: deliverables.slice(0, 3).join('; ') || '표준 산출물 및 문서 제출',
+    operational_requirements: '운영 및 유지보수 지원',
+    security_requirements: '정보보안 정책 준수',
+    legal_requirements: '관련 법규 및 규제 준수',
+    special_conditions: '특별 조건 없음'
+  }
   
   return result
 }
@@ -315,30 +331,55 @@ app.post('/api/customers/generate', async (c) => {
     const { deep_research_data, rfp_analysis_data, company_name, department } = await c.req.json()
     const { env } = c
     
-    const storage = new JsonStorageService(env.KV)
+    // 입력 데이터 검증
+    if (!deep_research_data || !rfp_analysis_data) {
+      return c.json({
+        success: false,
+        error: '딥리서치 데이터와 RFP 분석 데이터가 모두 필요합니다.'
+      }, 400)
+    }
     
+    console.log('AI 가상고객 생성 시작:', { company_name, department })
+    
+    const storage = new JsonStorageService(env.KV)
     let customer
     
     if (env.OPENAI_API_KEY) {
-      // LLM 기반 실제 가상고객 생성
-      const openai = new OpenAIService(env.OPENAI_API_KEY)
-      
-      customer = await openai.generateVirtualCustomer(
-        deep_research_data,
-        rfp_analysis_data,
-        'CTO' // customer type
-      )
-      console.log('LLM AI 가상고객 생성 완룼')
+      try {
+        // LLM 기반 실제 가상고객 생성
+        console.log('OpenAI로 가상고객 생성 시작')
+        const openai = new OpenAIService(env.OPENAI_API_KEY)
+        
+        customer = await openai.generateVirtualCustomer(
+          deep_research_data,
+          rfp_analysis_data,
+          'CTO' // customer type
+        )
+        console.log('OpenAI 가상고객 생성 완료')
+        
+      } catch (openaiError) {
+        console.error('OpenAI 가상고객 생성 실패:', openaiError)
+        // OpenAI 실패시 기본 생성으로 fallback
+        const customerGeneration = new CustomerGenerationService()
+        customer = await customerGeneration.generateVirtualCustomer(
+          deep_research_data,
+          rfp_analysis_data,
+          company_name,
+          department || 'CTO'
+        )
+        console.log('Fallback 가상고객 생성 완료')
+      }
     } else {
       // 기본 가상고객 생성
+      console.log('기본 서비스로 가상고객 생성 시작')
       const customerGeneration = new CustomerGenerationService()
       customer = await customerGeneration.generateVirtualCustomer(
         deep_research_data,
         rfp_analysis_data,
         company_name,
-        department || '경영기획'
+        department || 'CTO'
       )
-      console.log('기본 AI 가상고객 생성 완룼')
+      console.log('기본 AI 가상고객 생성 완료')
     }
     
     // KV 스토리지에 저장
@@ -985,28 +1026,49 @@ app.post('/api/parse/rfp', async (c) => {
       }, 400)
     }
     
-    // OpenAI API로 RFP 분석 (실제 분석)
-    if (env.OPENAI_API_KEY && text.length > 100) {
-      const openai = new OpenAIService(env.OPENAI_API_KEY)
-      const rfpAnalysisData = await openai.extractRfpAnalysisData(text, file_name || 'rfp.txt')
-      
-      return c.json({
-        success: true,
-        data: {
-          parsed_document: {
-            title: file_name || 'RFP 문서',
-            content: text,
-            word_count: text.length,
-            parsed_at: new Date().toISOString()
+    // 1단계: NLP 기반 정보 추출
+    console.log('NLP 기반 RFP 분석 시작')
+    const nlpAnalysis = await generateNLPRfpAnalysis(text, file_name || 'rfp.txt')
+    console.log('NLP 분석 완료:', nlpAnalysis)
+    
+    // 2단계: OpenAI로 15속성 재구성 (NLP 결과 기반)
+    if (env.OPENAI_API_KEY && text.length > 50) {
+      try {
+        const openai = new OpenAIService(env.OPENAI_API_KEY)
+        
+        // NLP 분석 결과를 컨텍스트로 제공
+        const contextualRfpContent = `
+원본 RFP 텍스트:
+${text}
+
+NLP 분석 결과:
+${JSON.stringify(nlpAnalysis, null, 2)}
+
+위 정보를 바탕으로 RFP 15속성을 재구성해 주세요.`
+        
+        const rfpAnalysisData = await openai.extractRfpAnalysisData(contextualRfpContent, file_name || 'rfp.txt')
+        
+        return c.json({
+          success: true,
+          data: {
+            parsed_document: {
+              title: file_name || 'RFP 문서',
+              content: text,
+              word_count: text.length,
+              parsed_at: new Date().toISOString()
+            },
+            rfp_analysis_data: rfpAnalysisData,
+            nlp_extracted_data: nlpAnalysis
           },
-          rfp_analysis_data: rfpAnalysisData
-        },
-        message: 'RFP 문서가 성공적으로 분석되었습니다 (OpenAI GPT-4o).'
-      })
+          message: 'RFP 문서가 성공적으로 분석되었습니다 (NLP + OpenAI GPT-4o).'
+        })
+      } catch (openaiError) {
+        console.error('OpenAI RFP 분석 실패:', openaiError)
+        // OpenAI 실패시 NLP 결과 반환
+      }
     }
     
-    // 기본 키워드 매칭 분석 (fallback)
-    const basicAnalysis = await generateBasicRfpAnalysis(text, file_name || 'rfp.txt')
+    // 3단계: NLP 분석 결과 반환 (OpenAI 없거나 실패시)
     
     return c.json({
       success: true,
@@ -1017,9 +1079,10 @@ app.post('/api/parse/rfp', async (c) => {
           word_count: text.length,
           parsed_at: new Date().toISOString()
         },
-        rfp_analysis_data: basicAnalysis
+        rfp_analysis_data: nlpAnalysis,
+        nlp_extracted_data: nlpAnalysis
       },
-      message: 'RFP 문서가 분석되었습니다 (키워드 매칭).'
+      message: 'RFP 문서가 분석되었습니다 (NLP 기반).'
     })
 
   } catch (error) {

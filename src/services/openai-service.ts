@@ -30,10 +30,10 @@ export class OpenAIService {
   ): Promise<DeepResearchData> {
     
     const prompt = `
-당신은 기업 분석 전문가입니다. 다음 기업 정보를 분석하여 15가지 딥리서치 속성을 추출해주세요.
+당신은 기업 분석 전문가입니다. GPT-4o가 보유한 최신 지식을 바탕으로 다음 기업의 15가지 딥리서치 속성을 분석해주세요.
 
 기업명: ${companyName}
-웹 콘텐츠: ${webContent}
+분석 요청: 당신이 알고 있는 해당 기업의 최신 정보를 바탕으로 분석해 주세요.
 분석 깊이: ${researchDepth}
 
 다음 15개 속성을 분석해주세요:

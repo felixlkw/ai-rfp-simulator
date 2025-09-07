@@ -128,33 +128,24 @@ export class DeepResearchService {
     console.log(`딥리서치 시작: ${companyName} (${researchDepth})`)
     
     try {
-      // 1단계: 웹 크롤링으로 기업 데이터 수집
-      const maxPages = researchDepth === 'basic' ? 3 : researchDepth === 'detailed' ? 5 : 8
-      const crawlResult = await this.webCrawler.crawlCompanyData(companyName, urls, maxPages)
-      
-      console.log(`웹 크롤링 완료: ${crawlResult.total_word_count}자 수집`)
-      
-      // 2단계: LLM으로 15속성 분석 (OpenAI 연동)
+      // GPT-4o 사전지식 기반 딥리서치 (웹 크롤링 제거)
       let deepResearchData: DeepResearchData
       
-      if (this.openaiService && crawlResult.total_word_count > 500) {
-        // 수집된 콘텐츠 통합
-        const combinedContent = crawlResult.content_data
-          .map(data => `[${data.section_type}] ${data.title}\n${data.content}`)
-          .join('\n\n')
+      if (this.openaiService) {
+        console.log(`GPT-4o로 ${companyName} 사전지식 기반 분석 시작`)
         
-        // LLM 분석 실행
+        // GPT-4o의 사전 지식을 활용한 기업 분석
         deepResearchData = await this.openaiService.extractDeepResearchData(
           companyName,
-          combinedContent,
+          `기업명: ${companyName}\n분석 요청: GPT-4o가 알고 있는 최신 정보를 바탕으로 해당 기업의 15가지 딥리서치 속성을 분석해 주세요.`,
           researchDepth
         )
         
-        console.log('LLM 분석 완료: 15속성 추출')
+        console.log('GPT-4o 딥리서치 분석 완료: 15속성 추출')
       } else {
-        // LLM을 사용할 수 없는 경우 기본 구조 반환
-        console.log('LLM 연동 없음 - 기본 구조 반환')
-        deepResearchData = this.generateDefaultResearchData(companyName, crawlResult)
+        // OpenAI를 사용할 수 없는 경우 기본 구조 반환
+        console.log('OpenAI 연동 없음 - 기본 구조 반환')
+        deepResearchData = this.generateDefaultResearchData(companyName)
       }
       
       return {
@@ -162,8 +153,8 @@ export class DeepResearchService {
         research_depth: researchDepth,
         deep_research_data: deepResearchData,
         collection_timestamp: new Date().toISOString(),
-        data_sources: crawlResult.collected_urls,
-        total_content_length: crawlResult.total_word_count
+        data_sources: [`GPT-4o 사전지식: ${companyName}`],
+        total_content_length: companyName.length
       }
       
     } catch (error) {
