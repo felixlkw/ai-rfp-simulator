@@ -1,120 +1,79 @@
--- RFP 시뮬레이터 시드 데이터
+-- Seed data for PDF parsing pipeline testing
 
--- 1. 루브릭 앵커 데이터 삽입
-INSERT OR IGNORE INTO rubric_anchors (metric_name, score_value, anchor_description) VALUES
-  -- Clarity (명확성)
-  ('clarity', 20, '핵심 메시지가 불명확, 용어 혼동, 전달이 단절적'),
-  ('clarity', 40, '메시지는 있으나 설명이 산만, 전문 용어 해설 부족'),
-  ('clarity', 60, '전체적으로 명확하나 일부 중복·애매한 표현 존재'),
-  ('clarity', 80, '논리적 흐름이 뚜렷하고 누구나 쉽게 이해 가능'),
-  ('clarity', 100, '탁월한 명확성, 예시·비유 활용, 모든 청중이 직관적으로 이해'),
-  
-  -- Expertise (전문성)
-  ('expertise', 20, '전문성 근거 거의 없음, 사실 오류 포함'),
-  ('expertise', 40, '일부 전문 지식 언급 있으나 구체적 사례 부족'),
-  ('expertise', 60, '기본적 전문성 보임, 통상적 업계 용어 활용'),
-  ('expertise', 80, '높은 수준의 전문성, 데이터·사례 기반 설명'),
-  ('expertise', 100, '최고 수준의 전문성, 최신 연구·레퍼런스·실무 적용까지 반영'),
-  
-  -- Persuasion (설득력)
-  ('persuasion', 20, '주장만 있고 근거 부족, 설득력 매우 약함'),
-  ('persuasion', 40, '일부 근거 제시, 그러나 고객 관점 반영 미흡'),
-  ('persuasion', 60, '일정 수준의 설득력, 고객 요구와 연결 시도'),
-  ('persuasion', 80, '강한 설득력, KPI 달성 논리 제시'),
-  ('persuasion', 100, '탁월한 설득력, 고객 가치와 ROI까지 강하게 어필'),
-  
-  -- Logic (논리성)
-  ('logic', 20, '논리적 비약 심각, 전개가 단절적'),
-  ('logic', 40, '논리적 흐름 있으나 연결이 약함'),
-  ('logic', 60, '기본적 논리 구조 유지, 일부 허점 존재'),
-  ('logic', 80, '논리적 일관성 뚜렷, 주장 간 명확한 연결'),
-  ('logic', 100, '철저한 논리 전개, 반론까지 선제적으로 대비'),
-  
-  -- Creativity (창의성)
-  ('creativity', 20, '기존 방식 반복, 차별화 전혀 없음'),
-  ('creativity', 40, '제한적 차별화, 새로운 아이디어는 있으나 불완전'),
-  ('creativity', 60, '일부 차별적 접근, 실현성 낮음'),
-  ('creativity', 80, '독창적 접근, 실행 가능성이 충분'),
-  ('creativity', 100, '혁신적 아이디어, 시장/업계에서 선도 가능'),
-  
-  -- Reliability (신뢰성)
-  ('reliability', 20, '근거 불충분, 신뢰하기 어려움'),
-  ('reliability', 40, '일부 근거 제시, 그러나 모호함 존재'),
-  ('reliability', 60, '기본적 신뢰성 확보, 검증된 자료 활용'),
-  ('reliability', 80, '높은 신뢰성, 리스크 대비책 명확'),
-  ('reliability', 100, '완벽한 신뢰성, 객관적 인증·레퍼런스·사례로 뒷받침');
+-- Insert test RFPs
+INSERT OR IGNORE INTO rfps (id, title, content, industry, budget_range, deadline, requirements, status) VALUES 
+  ('rfp-001', 'Digital Transformation Initiative', 'Large-scale digital transformation project focusing on cloud migration and process automation', 'Technology', '$5M-10M', '2024-12-31', 'Cloud infrastructure, API integration, security compliance', 'active'),
+  ('rfp-002', 'Supply Chain Optimization System', 'Enterprise supply chain management system with real-time tracking and predictive analytics', 'Manufacturing', '$2M-5M', '2024-06-30', 'ERP integration, IoT sensors, machine learning', 'active'),
+  ('rfp-003', 'Customer Experience Platform', 'Omnichannel customer experience platform with AI-powered personalization', 'Retail', '$1M-3M', '2024-09-15', 'CRM integration, AI/ML capabilities, mobile app', 'active');
 
--- 2. 페르소나 필드 구조 정의
-INSERT OR IGNORE INTO persona_fields_structure (field_name, field_type, description, data_source, example_values) VALUES
-  ('id', 'string', '고유 식별자', '시스템 자동 생성', 'UUID 형태'),
-  ('name', 'string', '이름', '고객 인터뷰, 보도자료, 회사 웹사이트 임원 소개', '김철수, 이영희'),
-  ('department', 'string', '부서', '인터뷰, 회사 조직도, IR 자료', '기술개발부, 재무부, 경영진'),
-  ('company', 'string', '회사', 'RFP, 보도자료, ESG 리포트', '삼성전자, LG화학'),
-  ('rank', 'string', '직급', '인터뷰, 보도자료 직급/호칭', 'CTO, CFO, CEO'),
-  ('version', 'string', '버전', '내부 관리용', 'v1.0, v2.1'),
-  ('kpi', 'string', '핵심 성과 지표', 'ESG 리포트, 연차보고서, IR자료', '매출성장률, R&D투자비율'),
-  ('evaluation_focus', 'string', '평가 중점사항', '고객 인터뷰, 발표 피드백, 보고서', '기술혁신, 수익성, 지속가능성'),
-  ('budget_authority', 'integer', '예산 권한 (1-10 스케일)', '고객 인터뷰, 보도자료', '1(낮음), 5(중간), 10(높음)'),
-  ('decision_influence', 'integer', '의사결정 영향력 (1-10 스케일)', '조직 내 의사결정 구조, 인터뷰', '1(낮음), 5(중간), 10(높음)'),
-  ('technical_expertise', 'integer', '기술 전문성 (1-10 스케일)', '인터뷰, LinkedIn 프로필, 논문/기고문', '1(낮음), 5(중간), 10(높음)'),
-  ('industry_experience', 'integer', '업계 경험 (연수)', '보도자료, 이력 기사, 인터뷰', '5년, 15년, 25년'),
-  ('communication_style', 'string', '커뮤니케이션 스타일', '고객 인터뷰 중 화법/피드백 방식, 보도 인터뷰 톤', '직접적, 협력적, 분석적'),
-  ('risk_tolerance', 'integer', '위험 감수성 (1-10 스케일)', 'ESG 리포트, 보도자료', '1(보수적), 5(중간), 10(적극적)'),
-  ('innovation_openness', 'integer', '혁신 개방성 (1-10 스케일)', '보도자료, ESG·R&D 보고서', '1(보수적), 5(중간), 10(적극적)'),
-  ('team_dynamics', 'string', '팀 역학', '인터뷰, 조직문화 보고서', '협업중심, 수직적, 수평적'),
-  ('strategic_priority', 'string', '전략적 우선순위', 'ESG 리포트, 최신동향 리포트, 경영진 인터뷰', '기술혁신, 수익성, ESG경영');
-
--- 3. 페르소나 평가 매핑 정의
-INSERT OR IGNORE INTO persona_evaluation_mapping (evaluation_metric, mapped_fields, description, default_weight, field_weights) VALUES
-  ('명확성 (Clarity)', '["communication_style", "evaluation_focus", "department"]', '발표를 얼마나 이해하기 쉽게 하는지, 커뮤니케이션 선호도와 직무 특성이 반영됨', 0.20, '{"communication_style": 0.5, "evaluation_focus": 0.3, "department": 0.2}'),
-  ('전문성 (Expertise)', '["technical_expertise", "industry_experience", "rank"]', '기술적 깊이·업계 경험, 직급이 높을수록 전문성을 중시', 0.20, '{"technical_expertise": 0.5, "industry_experience": 0.3, "rank": 0.2}'),
-  ('설득력 (Persuasion)', '["decision_influence", "budget_authority", "kpi", "communication_style"]', '예산권·의사결정 영향력이 클수록 설득력 있는 근거 요구', 0.15, '{"decision_influence": 0.4, "budget_authority": 0.3, "kpi": 0.2, "communication_style": 0.1}'),
-  ('논리성 (Logic)', '["strategic_priority", "evaluation_focus", "team_dynamics", "rank"]', '전략적 우선순위·팀 논리를 얼마나 충족하는지', 0.15, '{"strategic_priority": 0.4, "evaluation_focus": 0.3, "team_dynamics": 0.2, "rank": 0.1}'),
-  ('창의성 (Creativity)', '["innovation_openness", "risk_tolerance", "kpi"]', '혁신·리스크 감수성, KPI와 맞는 창의적 접근 여부', 0.15, '{"innovation_openness": 0.5, "risk_tolerance": 0.3, "kpi": 0.2}'),
-  ('신뢰성 (Reliability)', '["industry_experience", "company", "rank", "communication_style", "decision_influence"]', '신뢰도·경험·조직문화적 배경에 따른 안정성 강조', 0.15, '{"industry_experience": 0.3, "company": 0.2, "rank": 0.2, "communication_style": 0.2, "decision_influence": 0.1}');
-
--- 4. 데모 페르소나 데이터 삽입
-INSERT OR IGNORE INTO executive_personas_data (
-  id, name, department, company, rank, version, kpi, evaluation_focus, 
-  budget_authority, decision_influence, technical_expertise, industry_experience,
-  communication_style, risk_tolerance, innovation_openness, team_dynamics, strategic_priority
-) VALUES
-  -- 삼성전자 경영진
-  ('SEC_001', '이재용', '경영진', '삼성전자', '회장', 'v1.0', '글로벌 시장점유율 확대', '기술혁신과 글로벌 경쟁력', 10, 10, 7, 25, '전략적', 8, 9, '수직적', 'AI·반도체 기술 선도'),
-  ('SEC_002', '한종희', 'DX부문', '삼성전자', '부회장(공동 대표이사)', 'v1.0', 'DX사업 수익성 개선', '사업 실행력과 성과', 9, 9, 8, 20, '협력적', 7, 8, '협업중심', '가전·모바일 사업 강화'),
-  ('SEC_003', '이주형', 'Samsung Research', '삼성전자', '부사장(CTO)', 'v1.0', 'AI 기술 개발 성과', '기술 전문성과 혁신', 7, 7, 10, 15, '분석적', 6, 10, '수평적', '생성형 AI 기술 선도'),
+-- Insert test personas (기본 5개 + Executive 페르소나 12개 추가)
+INSERT OR IGNORE INTO personas (id, name, avatar_url, position, department, influence_level, budget_authority, technical_background, risk_tolerance, communication_style, decision_criteria, key_concerns, preferred_solutions, relationship_dynamics, time_constraints, information_sources, success_metrics, potential_objections) VALUES 
+  -- 기존 기본 페르소나들
+  ('persona-001', 'Sarah Chen', '/static/avatars/sarah.jpg', 'Chief Technology Officer', 'Technology', 9, true, true, 'medium', 'direct', 'Technical feasibility and scalability', 'Security, integration complexity', 'Cloud-native, API-first solutions', 'Collaborative with engineering teams', 'Quarterly planning cycles', 'Technical documentation, vendor demos', 'System performance and uptime', 'Vendor lock-in concerns'),
+  ('persona-002', 'Michael Rodriguez', '/static/avatars/michael.jpg', 'Chief Financial Officer', 'Finance', 8, true, false, 'low', 'formal', 'Cost-benefit analysis and ROI', 'Budget overruns, hidden costs', 'Proven solutions with clear pricing', 'Cautious with procurement decisions', 'Annual budget cycles', 'Financial reports, industry benchmarks', 'Cost savings and efficiency gains', 'High upfront costs'),
+  ('persona-003', 'Jennifer Kim', '/static/avatars/jennifer.jpg', 'VP of Operations', 'Operations', 7, false, true, 'high', 'collaborative', 'Operational efficiency and user adoption', 'Change management, training requirements', 'User-friendly, intuitive interfaces', 'Inclusive decision-making process', 'Project-driven timelines', 'User feedback, pilot programs', 'Process improvement metrics', 'Disruption to current workflows'),
+  ('persona-004', 'David Thompson', '/static/avatars/david.jpg', 'CISO', 'Security', 8, false, true, 'low', 'analytical', 'Security compliance and risk mitigation', 'Data breaches, regulatory violations', 'Security-first, compliant solutions', 'Detail-oriented evaluation process', 'Immediate security needs', 'Security audits, compliance frameworks', 'Zero security incidents', 'Insufficient security controls'),
+  ('persona-005', 'Lisa Wang', '/static/avatars/lisa.jpg', 'Chief Marketing Officer', 'Marketing', 6, false, false, 'high', 'persuasive', 'Customer engagement and brand impact', 'Market positioning, customer satisfaction', 'Innovative, customer-centric solutions', 'Stakeholder alignment meetings', 'Campaign launch deadlines', 'Market research, customer surveys', 'Customer acquisition and retention', 'Technology complexity affecting UX'),
   
-  -- LG화학 경영진
-  ('LGC_001', '신학철', '경영진', 'LG화학', '대표이사', 'v1.0', '배터리 사업 글로벌 1위', '수익성과 시장 지배력', 10, 10, 8, 30, '직접적', 7, 8, '수직적', '배터리·소재 사업 집중'),
-  ('LGC_002', '차동석', '재무부문', 'LG화학', 'CFO', 'v1.0', '재무건전성 및 투자수익률', '재무안정성과 효율성', 9, 8, 6, 20, '분석적', 5, 6, '협업중심', '재무 최적화 및 투자 관리'),
-  ('LGC_003', '이종구', '기술개발부문', 'LG화학', '부사장(CTO)', 'v1.0', 'R&D투자 대비 특허 성과', '기술혁신과 연구개발', 8, 7, 10, 18, '분석적', 7, 9, '수평적', '친환경 소재 기술 개발'),
+  -- Executive 페르소나들 (데모용 추가)
+  ('exec-001', 'James Parker', '/static/avatars/james.jpg', 'Chief Executive Officer', 'Executive', 10, true, false, 'medium', 'strategic', 'Long-term business growth and competitive advantage', 'Market share, shareholder value, regulatory risks', 'Proven market leaders with strong ROI', 'Board-level strategic decisions', 'Quarterly earnings focus', 'Industry reports, board meetings, analyst briefings', 'Revenue growth, market capitalization, ESG metrics', 'Disruptive technology risks'),
+  ('exec-002', 'Patricia Johnson', '/static/avatars/patricia.jpg', 'Chief Operating Officer', 'Operations', 9, true, true, 'medium', 'systematic', 'Operational excellence and process optimization', 'Scalability, efficiency, quality control', 'Enterprise-grade, scalable solutions', 'Cross-functional leadership team', 'Monthly performance reviews', 'Operational dashboards, KPI reports', 'Operational efficiency, cost reduction, quality metrics', 'Implementation complexity and resource constraints'),
+  ('exec-003', 'Robert Wilson', '/static/avatars/robert.jpg', 'Chief Strategy Officer', 'Strategy', 8, false, false, 'high', 'visionary', 'Strategic alignment and competitive positioning', 'Market disruption, strategic execution gaps', 'Innovative solutions with strategic advantage', 'Strategy committee and board presentations', 'Annual strategic planning cycles', 'Market intelligence, competitive analysis', 'Strategic goal achievement, market position improvement', 'Technology adoption barriers'),
+  ('exec-004', 'Maria Gonzalez', '/static/avatars/maria.jpg', 'Chief Human Resources Officer', 'Human Resources', 7, true, false, 'low', 'empathetic', 'Employee engagement and talent retention', 'Skills gap, change management, cultural fit', 'User-friendly solutions with strong support', 'People-first approach to technology adoption', 'Quarterly employee surveys', 'HR analytics, employee feedback, industry benchmarks', 'Employee satisfaction, retention rates, productivity', 'User adoption challenges and training requirements'),
+  ('exec-005', 'Thomas Anderson', '/static/avatars/thomas.jpg', 'Chief Legal Officer', 'Legal', 8, false, false, 'low', 'cautious', 'Legal compliance and risk mitigation', 'Regulatory compliance, contractual risks, data privacy', 'Compliant solutions with strong legal frameworks', 'Legal review and approval processes', 'Regulatory deadline-driven', 'Legal databases, regulatory updates, industry counsel', 'Zero legal incidents, compliance audit results', 'Regulatory non-compliance and legal exposure'),
+  ('exec-006', 'Emily Davis', '/static/avatars/emily.jpg', 'Chief Innovation Officer', 'Innovation', 7, true, true, 'high', 'experimental', 'Innovation leadership and digital transformation', 'Innovation pipeline, technology adoption speed', 'Cutting-edge, disruptive technology solutions', 'Innovation committees and pilot programs', 'Innovation sprint cycles', 'Technology trends, startup ecosystem, research publications', 'Innovation metrics, patent portfolio, time-to-market', 'Technology maturity and implementation risks'),
+  ('exec-007', 'Christopher Brown', '/static/avatars/christopher.jpg', 'Chief Revenue Officer', 'Sales', 8, true, false, 'medium', 'results-driven', 'Revenue growth and market expansion', 'Sales pipeline, customer acquisition cost, churn', 'Revenue-generating solutions with clear ROI', 'Sales leadership and customer-facing decisions', 'Quarterly revenue targets', 'Sales reports, customer feedback, market analysis', 'Revenue growth, customer lifetime value, market share', 'Customer adoption barriers and competitive pressure'),
+  ('exec-008', 'Amanda Taylor', '/static/avatars/amanda.jpg', 'Chief Customer Officer', 'Customer Success', 7, false, false, 'high', 'customer-centric', 'Customer satisfaction and experience optimization', 'Customer churn, satisfaction scores, support quality', 'Customer-first solutions with excellent support', 'Customer advisory boards and feedback sessions', 'Customer success metrics cycles', 'Customer surveys, support tickets, usage analytics', 'Customer satisfaction scores, NPS, retention rates', 'Poor user experience and support challenges'),
+  ('exec-009', 'Kenneth Martinez', '/static/avatars/kenneth.jpg', 'Chief Supply Chain Officer', 'Supply Chain', 7, true, true, 'low', 'analytical', 'Supply chain efficiency and cost optimization', 'Supply disruption, inventory management, vendor risks', 'Reliable, cost-effective supply chain solutions', 'Supplier partnership and vendor management', 'Supply chain performance cycles', 'Supply chain analytics, vendor reports, industry data', 'Cost savings, delivery performance, inventory turnover', 'Supply chain disruption and integration complexity'),
+  ('exec-010', 'Rachel Wilson', '/static/avatars/rachel.jpg', 'Chief Sustainability Officer', 'Sustainability', 6, false, false, 'medium', 'purpose-driven', 'Environmental impact and sustainability goals', 'ESG compliance, carbon footprint, stakeholder expectations', 'Sustainable, environmentally responsible solutions', 'Sustainability committee and stakeholder engagement', 'ESG reporting cycles', 'Sustainability reports, ESG ratings, regulatory updates', 'Carbon reduction, ESG scores, sustainability targets', 'Greenwashing risks and sustainability measurement challenges'),
+  ('exec-011', 'Steven Clark', '/static/avatars/steven.jpg', 'Chief Risk Officer', 'Risk Management', 8, false, true, 'low', 'methodical', 'Enterprise risk management and mitigation', 'Operational risks, cybersecurity threats, regulatory changes', 'Low-risk, compliant solutions with strong controls', 'Risk committee and audit processes', 'Risk assessment cycles', 'Risk reports, audit findings, regulatory guidance', 'Risk reduction, control effectiveness, audit results', 'Unidentified risks and control failures'),
+  ('exec-012', 'Laura Anderson', '/static/avatars/laura.jpg', 'Chief Data Officer', 'Data & Analytics', 7, true, true, 'medium', 'data-driven', 'Data governance and analytics capabilities', 'Data quality, privacy compliance, analytics ROI', 'Data-centric solutions with strong governance', 'Data governance committees and analytics teams', 'Data quality improvement cycles', 'Data quality reports, analytics dashboards, compliance audits', 'Data quality scores, analytics adoption, compliance rates', 'Data privacy violations and poor data quality');
+
+-- Link personas to RFPs with relevance scores
+INSERT OR IGNORE INTO rfp_personas (rfp_id, persona_id, relevance_score, notes) VALUES 
+  -- RFP-001: Digital Transformation Initiative
+  ('rfp-001', 'persona-001', 10, 'Primary technical decision maker for digital transformation'),
+  ('rfp-001', 'persona-002', 8, 'Budget approval and financial oversight'),
+  ('rfp-001', 'persona-003', 7, 'Process integration and change management'),
+  ('rfp-001', 'persona-004', 9, 'Security architecture and compliance'),
+  ('rfp-001', 'exec-001', 9, 'CEO oversight for strategic digital transformation'),
+  ('rfp-001', 'exec-002', 8, 'COO ensuring operational readiness'),
+  ('rfp-001', 'exec-003', 8, 'CSO aligning with corporate strategy'),
+  ('rfp-001', 'exec-006', 9, 'CIO leading innovation and technology adoption'),
+  ('rfp-001', 'exec-011', 7, 'CRO managing transformation risks'),
   
-  -- 한국조선해양 경영진
-  ('HKS_001', '김성준', '경영진', '한국조선해양', '대표이사', 'v1.0', '조선 수주량 및 수익성', '사업 성과와 글로벌 경쟁력', 10, 10, 8, 25, '직접적', 6, 7, '수직적', '친환경 선박 기술 확보'),
-  ('HKS_002', '이종윤', '재정부문', '한국조선해양', '전무(CFO)', 'v1.0', '자금조달 성공률 및 재무비율', '재무 안정성과 자금 관리', 8, 7, 5, 22, '협력적', 4, 5, '협업중심', '재무구조 개선 및 투자 최적화'),
+  -- RFP-002: Supply Chain Optimization System
+  ('rfp-002', 'persona-001', 8, 'Technical integration requirements'),
+  ('rfp-002', 'persona-002', 9, 'Cost optimization focus'),
+  ('rfp-002', 'persona-003', 10, 'Primary operational stakeholder'),
+  ('rfp-002', 'persona-004', 6, 'Data security for supply chain'),
+  ('rfp-002', 'exec-002', 10, 'COO leading supply chain excellence'),
+  ('rfp-002', 'exec-009', 10, 'CSCO as primary stakeholder for supply chain optimization'),
+  ('rfp-002', 'exec-007', 8, 'CRO interested in revenue impact from supply chain efficiency'),
+  ('rfp-002', 'exec-012', 7, 'CDO for supply chain analytics and data governance'),
   
-  -- GS칼텍스 경영진
-  ('GSC_001', '허세홍', '경영진', 'GS칼텍스', '대표이사', 'v1.0', '정유사업 수익성 및 에너지 전환', '사업 성과와 지속가능성', 10, 10, 7, 28, '직접적', 6, 8, '수직적', '친환경 에너지 사업 확장'),
-  ('GSC_002', '최우진', '재무부문', 'GS칼텍스', 'CFO', 'v1.0', '재무 효율성 및 투자 수익률', '재무안정성과 위험관리', 9, 8, 5, 18, '분석적', 5, 6, '협업중심', '재무 최적화 및 ESG 투자');
+  -- RFP-003: Customer Experience Platform
+  ('rfp-003', 'persona-001', 7, 'Platform architecture and APIs'),
+  ('rfp-003', 'persona-002', 7, 'Marketing technology budget'),
+  ('rfp-003', 'persona-005', 10, 'Primary business stakeholder for customer experience'),
+  ('rfp-003', 'exec-007', 10, 'CRO focused on customer acquisition and revenue growth'),
+  ('rfp-003', 'exec-008', 10, 'CCO as primary advocate for customer experience'),
+  ('rfp-003', 'exec-004', 7, 'CHRO interested in employee tools for customer service'),
+  ('rfp-003', 'exec-012', 8, 'CDO for customer data analytics and personalization');
 
--- 5. 인터뷰 질문 프레임워크 (일부 샘플)
-INSERT OR IGNORE INTO interview_questions_framework (
-  question_id, question_category, interview_question, response_type, scoring_method,
-  target_fields, evaluation_metrics_impact, example_responses
-) VALUES
-  ('Q001', '기본정보', '담당자님의 현재 직책과 주요 업무 영역을 자세히 설명해 주세요.', 'String + 구조화', '직책 레벨(1-10), 업무 영역 복잡도 분석', '["rank", "department", "decision_influence"]', '{"전문성": 0.2, "설득력": 0.4, "신뢰성": 0.2}', 'CTO 기술전략 총괄 전사 디지털혁신 리딩'),
-  ('Q002', '기본정보', '이 분야에서 몇 년간 경험을 쌓으셨나요? 주요 경력 이력을 간단히 소개해 주세요.', 'Integer + String', '경력 연수 직접 환산, 주요 성과 가중치', '["industry_experience", "technical_expertise"]', '{"전문성": 0.3, "신뢰성": 0.3}', '15년 삼성→LG 이직 AI 플랫폼 구축 경험'),
-  ('Q003', '의사결정권한', '현재 직책에서 예산 승인 권한은 어느 정도 수준까지 가지고 계신가요?', 'Scale (1-10)', '예산 규모별 점수 매핑', '["budget_authority", "decision_influence"]', '{"설득력": 0.3, "논리성": 0.1}', '연간 100억 이상 승인 가능 (9점) 팀 예산만 관리 (5점)');
+-- Insert default persona mapping rules
+INSERT OR IGNORE INTO persona_mapping_rules (rule_id, rule_name, signal_type, signal_pattern, target_persona_field, adjustment_logic, precedence, active) VALUES 
+  ('rule-001', 'Budget Authority Detection', 'budget_procurement', 'budget|procurement|financial|cost', 'budget_authority', '{"action": "set_boolean", "value": true, "confidence_boost": 0.2}', 90, true),
+  ('rule-002', 'Technical Background from Requirements', 'technical_requirements', 'API|integration|architecture|technical', 'technical_background', '{"action": "set_boolean", "value": true, "confidence_boost": 0.15}', 85, true),
+  ('rule-003', 'Risk Tolerance from Compliance', 'risk_compliance', 'compliance|regulatory|security|audit', 'risk_tolerance', '{"action": "set_value", "value": "low", "confidence_boost": 0.1}', 80, true),
+  ('rule-004', 'Decision Criteria from KPIs', 'kpis', 'performance|efficiency|ROI|metrics', 'decision_criteria', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 75, true),
+  ('rule-005', 'Key Concerns from Risk Signals', 'risk_compliance', 'risk|compliance|security|audit', 'key_concerns', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 70, true),
+  ('rule-006', 'Innovation Influence Level', 'innovation_poc', 'innovation|POC|pilot|experimental', 'influence_level', '{"action": "increase_numeric", "amount": 1, "max": 10, "confidence_boost": 0.1}', 65, true),
+  ('rule-007', 'Governance Communication Style', 'governance_decision', 'governance|committee|board|executive', 'communication_style', '{"action": "set_value", "value": "formal", "confidence_boost": 0.1}', 60, true),
+  ('rule-008', 'Strategic Themes Success Metrics', 'strategic_themes', 'strategic|transformation|growth|efficiency', 'success_metrics', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 55, true),
+  ('rule-009', 'Evaluation Criteria Preferences', 'evaluation_criteria', 'evaluation|criteria|requirements|preferences', 'preferred_solutions', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 50, true),
+  ('rule-010', 'Technical Requirements Objections', 'technical_requirements', 'complex|difficult|challenging|integration', 'potential_objections', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 45, true),
+  ('rule-011', 'Budget Constraints Time Pressure', 'budget_procurement', 'urgent|immediate|deadline|timeline', 'time_constraints', '{"action": "set_value", "value": "immediate", "confidence_boost": 0.1}', 40, true),
+  ('rule-012', 'Innovation Information Sources', 'innovation_poc', 'research|analysis|study|report', 'information_sources', '{"action": "append_text", "separator": ", ", "confidence_boost": 0.1}', 35, true);
 
--- 6. 데모 RFP 문서
-INSERT OR IGNORE INTO rfp_documents (id, title, company, content_summary, parsed_signals) VALUES
-  ('RFP_001', 'AI 기반 스마트 팩토리 솔루션 구축 사업', '삼성전자', 'AI, IoT, 빅데이터를 활용한 제조업 디지털 전환 솔루션 구축', 
-   '{"kpi": ["생산성 향상", "품질 개선", "비용 절감"], "tech_requirements": ["AI/ML", "IoT", "클라우드"], "budget_range": "100억-200억", "innovation_focus": true}');
-
--- 데이터 무결성 검증을 위한 트리거 생성 (SQLite에서 지원하는 경우)
--- 페르소나 데이터 업데이트 시 updated_at 자동 갱신
-CREATE TRIGGER IF NOT EXISTS update_personas_timestamp 
-AFTER UPDATE ON executive_personas_data
-BEGIN
-  UPDATE executive_personas_data SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-END;
+PRAGMA foreign_keys = ON;

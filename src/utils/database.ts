@@ -73,21 +73,21 @@ export class DatabaseHelper {
   // 페르소나 조회 헬퍼
   async getPersonas(options: PaginationOptions = {}): Promise<{ personas: ExecutivePersona[]; pagination: any }> {
     let baseQuery = `
-      SELECT id, name, department, company, rank, version, kpi, evaluation_focus,
-             budget_authority, decision_influence, technical_expertise, industry_experience,
-             communication_style, risk_tolerance, innovation_openness, team_dynamics,
-             strategic_priority, created_at, updated_at
-      FROM executive_personas_data
+      SELECT id, name, avatar_url, position, department, influence_level, budget_authority, 
+             technical_background, risk_tolerance, communication_style, decision_criteria, 
+             key_concerns, preferred_solutions, relationship_dynamics, time_constraints, 
+             information_sources, success_metrics, potential_objections, created_at, updated_at
+      FROM personas
       WHERE 1=1
     `;
 
-    let countQuery = `SELECT COUNT(*) as count FROM executive_personas_data WHERE 1=1`;
+    let countQuery = `SELECT COUNT(*) as count FROM personas WHERE 1=1`;
     let params: any[] = [];
 
     // 검색 조건 추가
     if (options.search) {
       const searchCondition = this.buildSearchCondition(
-        ['name', 'company', 'rank', 'department'], 
+        ['name', 'position', 'department'], 
         options.search
       );
       baseQuery += searchCondition.condition;
@@ -108,7 +108,11 @@ export class DatabaseHelper {
   // 페르소나 단일 조회
   async getPersonaById(id: string): Promise<ExecutivePersona | null> {
     const result = await this.db.prepare(`
-      SELECT * FROM executive_personas_data WHERE id = ?
+      SELECT id, name, avatar_url, position, department, influence_level, budget_authority, 
+             technical_background, risk_tolerance, communication_style, decision_criteria, 
+             key_concerns, preferred_solutions, relationship_dynamics, time_constraints, 
+             information_sources, success_metrics, potential_objections, created_at, updated_at
+      FROM personas WHERE id = ?
     `).bind(id).first();
 
     return result as ExecutivePersona | null;
@@ -120,18 +124,25 @@ export class DatabaseHelper {
     const now = new Date().toISOString();
 
     await this.db.prepare(`
-      INSERT INTO executive_personas_data (
-        id, name, department, company, rank, version, kpi, evaluation_focus,
-        budget_authority, decision_influence, technical_expertise, industry_experience,
-        communication_style, risk_tolerance, innovation_openness, team_dynamics,
-        strategic_priority, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO personas (
+        id, name, avatar_url, position, department, influence_level, budget_authority,
+        technical_background, risk_tolerance, communication_style, decision_criteria,
+        key_concerns, preferred_solutions, relationship_dynamics, time_constraints,
+        information_sources, success_metrics, potential_objections, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      id, persona.name, persona.department, persona.company, persona.rank, 
-      persona.version || 'v1.0', persona.kpi, persona.evaluation_focus,
-      persona.budget_authority, persona.decision_influence, persona.technical_expertise,
-      persona.industry_experience, persona.communication_style, persona.risk_tolerance,
-      persona.innovation_openness, persona.team_dynamics, persona.strategic_priority,
+      id, persona.name, persona.avatar_url || '/static/avatars/default.jpg', 
+      persona.position, persona.department, persona.influence_level || 5,
+      persona.budget_authority || false, persona.technical_background || 'low',
+      persona.risk_tolerance || 'medium', persona.communication_style || 'formal',
+      persona.decision_criteria || 'Cost-effectiveness and ROI',
+      persona.key_concerns || 'Budget constraints and delivery timeline',
+      persona.preferred_solutions || 'Proven solutions with clear ROI',
+      persona.relationship_dynamics || 'Collaborative team member',
+      persona.time_constraints || 'Standard project timeline',
+      persona.information_sources || 'Team reports and industry updates',
+      persona.success_metrics || 'Project completion and budget adherence',
+      persona.potential_objections || 'High costs or unproven technology',
       now, now
     ).run();
 
@@ -161,7 +172,7 @@ export class DatabaseHelper {
     values.push(now, id);
 
     const result = await this.db.prepare(`
-      UPDATE executive_personas_data 
+      UPDATE personas 
       SET ${fields.join(', ')}
       WHERE id = ?
     `).bind(...values).run();
@@ -172,7 +183,7 @@ export class DatabaseHelper {
   // 페르소나 삭제
   async deletePersona(id: string): Promise<boolean> {
     const result = await this.db.prepare(`
-      DELETE FROM executive_personas_data WHERE id = ?
+      DELETE FROM personas WHERE id = ?
     `).bind(id).run();
 
     return result.changes > 0;
@@ -211,16 +222,16 @@ export class DatabaseHelper {
   async getPersonaStatsByCompany() {
     const result = await this.db.prepare(`
       SELECT 
-        company,
+        department as company,
         COUNT(*) as total_personas,
-        AVG(budget_authority) as avg_budget_authority,
-        AVG(decision_influence) as avg_decision_influence,
-        AVG(technical_expertise) as avg_technical_expertise,
-        AVG(risk_tolerance) as avg_risk_tolerance,
-        AVG(innovation_openness) as avg_innovation_openness
-      FROM executive_personas_data
-      WHERE company IS NOT NULL
-      GROUP BY company
+        AVG(influence_level) as avg_budget_authority,
+        AVG(influence_level) as avg_decision_influence,
+        AVG(CASE WHEN technical_background = 1 THEN 8 ELSE 3 END) as avg_technical_expertise,
+        AVG(CASE WHEN risk_tolerance = 'high' THEN 8 WHEN risk_tolerance = 'medium' THEN 5 ELSE 2 END) as avg_risk_tolerance,
+        AVG(CASE WHEN risk_tolerance = 'high' THEN 8 WHEN risk_tolerance = 'medium' THEN 5 ELSE 2 END) as avg_innovation_openness
+      FROM personas
+      WHERE department IS NOT NULL
+      GROUP BY department
       ORDER BY total_personas DESC
     `).all();
 
@@ -230,7 +241,7 @@ export class DatabaseHelper {
   // 대시보드 통계
   async getDashboardStats() {
     const [personasCount, proposalsCount, presentationsCount] = await Promise.all([
-      this.db.prepare('SELECT COUNT(*) as count FROM executive_personas_data').first(),
+      this.db.prepare('SELECT COUNT(*) as count FROM personas').first(),
       this.db.prepare('SELECT COUNT(*) as count FROM proposals').first(),
       this.db.prepare('SELECT COUNT(*) as count FROM presentations').first()
     ]);
@@ -277,6 +288,372 @@ export class DatabaseHelper {
     }
 
     return results;
+  }
+
+  // =============================================================================
+  // RFP 관련 메서드들
+  // =============================================================================
+
+  // 모든 페르소나 조회 (페이지네이션 없이)
+  async getAllPersonas(): Promise<ExecutivePersona[]> {
+    const result = await this.db.prepare(`
+      SELECT * FROM executive_personas_data ORDER BY created_at DESC
+    `).all();
+    
+    return result.results as ExecutivePersona[];
+  }
+
+  // RFP 문서 생성
+  async createRfpDocument(rfp: {
+    title: string;
+    filename: string;
+    file_type: string;
+    file_size: number;
+    content: string;
+    status: string;
+  }): Promise<string> {
+    const id = this.generateUUID();
+    const now = new Date().toISOString();
+
+    await this.db.prepare(`
+      INSERT INTO rfp_documents (
+        id, title, filename, file_type, file_size, content, status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      id, rfp.title, rfp.filename, rfp.file_type, rfp.file_size, 
+      rfp.content, rfp.status, now, now
+    ).run();
+
+    return id;
+  }
+
+  // RFP 문서 조회 (ID)
+  async getRfpDocumentById(id: string): Promise<any> {
+    const result = await this.db.prepare(`
+      SELECT * FROM rfp_documents WHERE id = ?
+    `).bind(id).first();
+
+    if (result && (result as any).analysis_result) {
+      try {
+        (result as any).analysis_result = JSON.parse((result as any).analysis_result);
+      } catch (error) {
+        console.error('Failed to parse analysis_result:', error);
+        (result as any).analysis_result = null;
+      }
+    }
+
+    return result;
+  }
+
+  // RFP 문서 목록 조회
+  async getRfpDocuments(options: PaginationOptions = {}): Promise<{ documents: any[]; pagination: any }> {
+    const baseQuery = `
+      SELECT id, title, filename, file_type, file_size, status, 
+             created_at, updated_at, analyzed_at, analysis_summary
+      FROM rfp_documents
+      WHERE 1=1
+    `;
+
+    const countQuery = `SELECT COUNT(*) as count FROM rfp_documents WHERE 1=1`;
+    let params: any[] = [];
+
+    // 검색 조건 추가 (필요시)
+    if (options.search) {
+      const searchCondition = this.buildSearchCondition(['title', 'filename'], options.search);
+      // baseQuery += searchCondition.condition;
+      // countQuery += searchCondition.condition;
+      params.push(...searchCondition.params);
+    }
+
+    const result = await this.paginate(
+      baseQuery, countQuery, params, 
+      { ...options, sort_by: options.sort_by || 'created_at' }
+    );
+
+    return {
+      documents: result.items,
+      pagination: result.pagination
+    };
+  }
+
+  // RFP 상태 업데이트
+  async updateRfpStatus(id: string, status: string): Promise<boolean> {
+    const now = new Date().toISOString();
+    
+    let additionalFields = '';
+    const params: any[] = [status, now];
+
+    // 상태에 따른 추가 필드 업데이트
+    if (status === 'analyzed') {
+      additionalFields = ', analyzed_at = ?';
+      params.splice(1, 0, now); // status 다음에 analyzed_at 삽입
+    }
+
+    params.push(id); // WHERE 절용 ID
+
+    const result = await this.db.prepare(`
+      UPDATE rfp_documents 
+      SET status = ?, updated_at = ?${additionalFields}
+      WHERE id = ?
+    `).bind(...params).run();
+
+    return result.changes > 0;
+  }
+
+  // RFP 분석 결과 업데이트
+  async updateRfpAnalysis(id: string, analysisResult: any): Promise<boolean> {
+    const now = new Date().toISOString();
+    
+    // 분석 요약 생성
+    const summary = this.generateAnalysisSummary(analysisResult);
+
+    const result = await this.db.prepare(`
+      UPDATE rfp_documents 
+      SET analysis_result = ?, analysis_summary = ?, analyzed_at = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(
+      JSON.stringify(analysisResult), 
+      summary, 
+      now, 
+      now, 
+      id
+    ).run();
+
+    return result.changes > 0;
+  }
+
+  // RFP 문서 삭제
+  async deleteRfpDocument(id: string): Promise<boolean> {
+    const result = await this.db.prepare(`
+      DELETE FROM rfp_documents WHERE id = ?
+    `).bind(id).run();
+
+    return result.changes > 0;
+  }
+
+  // 분석 요약 생성 헬퍼
+  private generateAnalysisSummary(analysisResult: any): string {
+    const summaryParts = [];
+    
+    if (analysisResult.kpi && analysisResult.kpi.length > 0) {
+      summaryParts.push(`KPI ${analysisResult.kpi.length}개`);
+    }
+    
+    if (analysisResult.evaluation_criteria && analysisResult.evaluation_criteria.length > 0) {
+      summaryParts.push(`평가기준 ${analysisResult.evaluation_criteria.length}개`);
+    }
+    
+    if (analysisResult.technical_requirements && analysisResult.technical_requirements.length > 0) {
+      summaryParts.push(`기술요건 ${analysisResult.technical_requirements.length}개`);
+    }
+    
+    if (analysisResult.strategic_themes && analysisResult.strategic_themes.length > 0) {
+      summaryParts.push(`전략테마 ${analysisResult.strategic_themes.length}개`);
+    }
+
+    return summaryParts.length > 0 ? summaryParts.join(', ') + ' 추출' : '분석 완료';
+  }
+
+  // RFP 업로드 통계
+  async getRfpUploadStats() {
+    const [totalCount, statusStats] = await Promise.all([
+      this.db.prepare('SELECT COUNT(*) as count FROM rfp_documents').first(),
+      this.db.prepare(`
+        SELECT status, COUNT(*) as count 
+        FROM rfp_documents 
+        GROUP BY status
+      `).all()
+    ]);
+
+    return {
+      total_documents: (totalCount as any)?.count || 0,
+      by_status: (statusStats.results as any[]) || []
+    };
+  }
+
+  // =============================================================================
+  // PDF 파싱 파이프라인 관련 메서드들
+  // =============================================================================
+
+  // 인제스트 작업 조회
+  async getIngestJob(jobId: string) {
+    const result = await this.db.prepare(`
+      SELECT * FROM rfp_ingest_jobs WHERE job_id = ?
+    `).bind(jobId).first();
+    
+    return result;
+  }
+
+  // RFP 페이지 조회
+  async getRfpPages(rfpId: string) {
+    const result = await this.db.prepare(`
+      SELECT * FROM rfp_pages WHERE rfp_id = ? ORDER BY page_no
+    `).bind(rfpId).all();
+    
+    return result.results;
+  }
+
+  // RFP 문서 구조 조회
+  async getRfpDocumentStructure(rfpId: string) {
+    const result = await this.db.prepare(`
+      SELECT * FROM rfp_document_structure WHERE rfp_id = ? ORDER BY section_type
+    `).bind(rfpId).all();
+    
+    return result.results.map((row: any) => ({
+      ...row,
+      normalized_data: row.normalized_data ? JSON.parse(row.normalized_data) : null
+    }));
+  }
+
+  // RFP 파싱 신호 조회 (확장된 필드 포함)
+  async getRfpSignalsExtended(rfpId: string) {
+    // 가장 최근의 성공한 작업 ID 조회
+    const latestJob = await this.db.prepare(`
+      SELECT job_id FROM rfp_ingest_jobs 
+      WHERE rfp_id = ? AND status = 'done'
+      ORDER BY created_at DESC 
+      LIMIT 1
+    `).bind(rfpId).first() as any;
+    
+    if (!latestJob) {
+      return [];
+    }
+    
+    const result = await this.db.prepare(`
+      SELECT 
+        signal_id, signal_type as signal_key, signal_value,
+        metadata, confidence_score as confidence, source_refs as source_span, 
+        extraction_method as source_type
+      FROM rfp_signals 
+      WHERE job_id = ?
+      ORDER BY confidence_score DESC
+    `).bind(latestJob.job_id).all();
+    
+    return result.results.map((row: any) => ({
+      ...row,
+      norm_payload: row.norm_payload ? JSON.parse(row.norm_payload) : null,
+      is_locked: Boolean(row.is_locked)
+    }));
+  }
+
+  // 품질 메트릭 조회
+  async getRfpQualityMetrics(rfpId: string) {
+    const result = await this.db.prepare(`
+      SELECT * FROM rfp_quality_metrics WHERE rfp_id = ? ORDER BY measured_at DESC
+    `).bind(rfpId).all();
+    
+    return result.results.map((row: any) => ({
+      ...row,
+      details: row.details ? JSON.parse(row.details) : null
+    }));
+  }
+
+  // 페르소나 상태 스냅샷 조회
+  async getPersonaStateSnapshots(rfpId: string, personaId?: string) {
+    let query = `
+      SELECT ps.*, ep.name as persona_name
+      FROM persona_state_snapshots ps
+      JOIN executive_personas_data ep ON ps.persona_id = ep.id
+      WHERE ps.rfp_id = ?
+    `;
+    const params: any[] = [rfpId];
+    
+    if (personaId) {
+      query += ` AND ps.persona_id = ?`;
+      params.push(personaId);
+    }
+    
+    query += ` ORDER BY ps.applied_at DESC`;
+    
+    const result = await this.db.prepare(query).bind(...params).all();
+    
+    return result.results.map((row: any) => ({
+      ...row,
+      original_value: row.original_value ? JSON.parse(row.original_value) : null,
+      adjusted_value: row.adjusted_value ? JSON.parse(row.adjusted_value) : null
+    }));
+  }
+
+  // 매핑 규칙 조회
+  async getPersonaImpactRules(enabled?: boolean) {
+    let query = `SELECT * FROM persona_mapping_rules`;
+    const params: any[] = [];
+    
+    if (enabled !== undefined) {
+      query += ` WHERE active = ?`;
+      params.push(enabled ? 1 : 0);
+    }
+    
+    query += ` ORDER BY precedence ASC, source_priority ASC`;
+    
+    const result = await this.db.prepare(query).bind(...params).all();
+    
+    return result.results.map((row: any) => ({
+      ...row,
+      transform_payload: row.transform_payload ? JSON.parse(row.transform_payload) : null,
+      enabled: Boolean(row.enabled)
+    }));
+  }
+
+  // 사용자 수정사항 저장
+  async saveUserCorrection(rfpId: string, correction: {
+    signal_id?: string;
+    original_value: string;
+    corrected_value: string;
+    correction_type: 'signal_value' | 'confidence' | 'classification';
+    user_id?: string;
+  }) {
+    const correctionId = this.generateUUID();
+    const now = new Date().toISOString();
+    
+    await this.db.prepare(`
+      INSERT INTO rfp_user_corrections (
+        correction_id, rfp_id, signal_id, original_value, corrected_value,
+        correction_type, user_id, corrected_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      correctionId, rfpId, correction.signal_id, correction.original_value,
+      correction.corrected_value, correction.correction_type, correction.user_id, now
+    ).run();
+    
+    return correctionId;
+  }
+
+  // RFP 종합 분석 결과 조회
+  async getRfpComprehensiveAnalysis(rfpId: string) {
+    const [
+      rfpDoc,
+      pages,
+      structures, 
+      signals,
+      metrics,
+      snapshots
+    ] = await Promise.all([
+      this.getRfpDocumentById(rfpId),
+      this.getRfpPages(rfpId),
+      this.getRfpDocumentStructure(rfpId),
+      this.getRfpSignalsExtended(rfpId),
+      this.getRfpQualityMetrics(rfpId),
+      this.getPersonaStateSnapshots(rfpId)
+    ]);
+    
+    return {
+      document: rfpDoc,
+      pages: pages,
+      structures: structures,
+      signals: signals,
+      quality_metrics: metrics,
+      persona_adjustments: snapshots,
+      processing_summary: {
+        total_pages: (pages as any[]).length,
+        total_structures: (structures as any[]).length,
+        total_signals: (signals as any[]).length,
+        avg_signal_confidence: (signals as any[]).length > 0 
+          ? (signals as any[]).reduce((sum: number, s: any) => sum + s.confidence, 0) / (signals as any[]).length
+          : 0,
+        total_persona_adjustments: (snapshots as any[]).length
+      }
+    };
   }
 }
 

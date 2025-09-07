@@ -87,11 +87,15 @@ CREATE TABLE IF NOT EXISTS scoring_methodology_guide (
 CREATE TABLE IF NOT EXISTS rfp_documents (
   id TEXT PRIMARY KEY, -- UUID
   title TEXT NOT NULL,
+  filename TEXT,
+  file_type TEXT,
+  file_size INTEGER,
+  content TEXT,
   company TEXT,
-  file_path TEXT,
-  file_hash TEXT,
-  content_summary TEXT,
-  parsed_signals TEXT, -- JSON 객체
+  status TEXT DEFAULT 'uploaded',
+  analysis_result TEXT, -- JSON 객체
+  analysis_summary TEXT,
+  analyzed_at DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
