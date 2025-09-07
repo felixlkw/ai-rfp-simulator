@@ -51,16 +51,19 @@ class CustomerGenerationApp {
 
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault()
-      dropZone.classList.add('border-blue-500', 'bg-blue-50')
+      dropZone.style.borderColor = 'var(--pwc-blue)'
+      dropZone.style.backgroundColor = 'var(--pwc-blue-light)'
     })
 
     dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('border-blue-500', 'bg-blue-50')
+      dropZone.style.borderColor = 'var(--neutral-300)'
+      dropZone.style.backgroundColor = 'var(--neutral-50)'
     })
 
     dropZone.addEventListener('drop', (e) => {
       e.preventDefault()
-      dropZone.classList.remove('border-blue-500', 'bg-blue-50')
+      dropZone.style.borderColor = 'var(--neutral-300)'
+      dropZone.style.backgroundColor = 'var(--neutral-50)'
       
       const files = e.dataTransfer.files
       if (files.length > 0) {
@@ -121,7 +124,7 @@ class CustomerGenerationApp {
     
     if (!container || !this.deepResearchData) return
 
-    resultsDiv?.classList.remove('hidden')
+    resultsDiv.style.display = 'block'
     container.innerHTML = ''
 
     // 15개 속성 카드 생성
@@ -178,7 +181,7 @@ class CustomerGenerationApp {
     
     if (!container || !this.rfpAnalysisData) return
 
-    resultsDiv?.classList.remove('hidden')
+    resultsDiv.style.display = 'block'
     container.innerHTML = ''
 
     // 15개 속성 카드 생성
@@ -190,28 +193,50 @@ class CustomerGenerationApp {
 
   createAttributeCard(attribute, type) {
     const card = document.createElement('div')
-    card.className = 'bg-gray-50 border border-gray-200 rounded-lg p-4'
+    card.style.cssText = `
+      background: var(--neutral-50); 
+      border: 2px solid var(--neutral-200); 
+      border-radius: var(--border-radius-md); 
+      padding: var(--spacing-md);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    `
     
-    const typeColor = type === 'research' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+    // 호버 효과 추가
+    card.addEventListener('mouseenter', () => {
+      card.style.borderColor = type === 'research' ? 'var(--pwc-blue)' : 'var(--success-color)'
+      card.style.boxShadow = 'var(--shadow-md)'
+    })
+    card.addEventListener('mouseleave', () => {
+      card.style.borderColor = 'var(--neutral-200)'
+      card.style.boxShadow = 'none'
+    })
+    
+    const typeColor = type === 'research' ? 
+      'background: var(--pwc-blue-light); color: var(--pwc-blue);' : 
+      'background: var(--success-color-light); color: var(--success-color);'
+    const typeIcon = type === 'research' ? 'fa-search' : 'fa-file-contract'
+    
     const sourceInfo = type === 'research' 
       ? `${attribute.source_type} (신뢰도: ${attribute.reliability_score}/10)`
       : `${attribute.section_title || 'RFP'} (페이지: ${attribute.page_number || 'N/A'})`
 
     card.innerHTML = `
-      <div class="flex items-center justify-between mb-2">
-        <h4 class="font-medium text-gray-900">${attribute.name}</h4>
-        <span class="px-2 py-1 text-xs font-medium rounded-full ${typeColor}">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+        <h4 style="font-weight: 600; color: var(--pwc-navy); margin: 0; word-break: keep-all;">${attribute.name}</h4>
+        <span style="padding: var(--spacing-xs) var(--spacing-sm); font-size: 0.75rem; font-weight: 600; border-radius: 20px; ${typeColor} display: flex; align-items: center; gap: var(--spacing-xs); word-break: keep-all;">
+          <i class="fas ${typeIcon}"></i>
           ${type === 'research' ? '딥리서치' : 'RFP'}
         </span>
       </div>
-      <p class="text-sm text-gray-700 mb-2">${attribute.content}</p>
-      <div class="text-xs text-gray-500">
-        <p>출처: ${sourceInfo}</p>
+      <p style="font-size: 0.875rem; color: var(--text-color); margin-bottom: var(--spacing-sm); line-height: 1.4; word-break: keep-all;">${attribute.content}</p>
+      <div style="font-size: 0.75rem; color: var(--text-muted);">
+        <p style="margin-bottom: var(--spacing-xs); word-break: keep-all;"><i class="fas fa-info-circle" style="margin-right: var(--spacing-xs);"></i>출처: ${sourceInfo}</p>
         ${type === 'research' && attribute.source_url ? 
-          `<p>URL: <a href="${attribute.source_url}" target="_blank" class="text-blue-600 hover:underline">${attribute.source_url.substring(0, 50)}...</a></p>` : 
+          `<p style="margin-bottom: var(--spacing-xs);"><i class="fas fa-link" style="margin-right: var(--spacing-xs);"></i>URL: <a href="${attribute.source_url}" target="_blank" style="color: var(--pwc-blue); text-decoration: none; word-break: break-all;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${attribute.source_url.substring(0, 50)}...</a></p>` : 
           ''}
         ${type === 'rfp' && attribute.source_snippet ? 
-          `<p class="mt-1 italic">"${attribute.source_snippet.substring(0, 100)}..."</p>` : 
+          `<p style="margin-top: var(--spacing-xs); font-style: italic; padding: var(--spacing-xs); background: var(--neutral-100); border-radius: var(--border-radius-sm); word-break: keep-all;">"${attribute.source_snippet.substring(0, 100)}..."</p>` : 
           ''}
       </div>
     `
@@ -223,8 +248,17 @@ class CustomerGenerationApp {
     const generateBtn = document.getElementById('generate-customer')
     if (this.deepResearchData && this.rfpAnalysisData) {
       generateBtn?.removeAttribute('disabled')
-      generateBtn?.classList.remove('bg-gray-400')
-      generateBtn?.classList.add('bg-purple-600', 'hover:bg-purple-700')
+      generateBtn.style.backgroundColor = 'var(--pwc-navy)'
+      generateBtn.style.cursor = 'pointer'
+      generateBtn.style.opacity = '1'
+      
+      // 호버 효과
+      generateBtn.onmouseenter = () => {
+        generateBtn.style.backgroundColor = 'var(--pwc-navy-light)'
+      }
+      generateBtn.onmouseleave = () => {
+        generateBtn.style.backgroundColor = 'var(--pwc-navy)'
+      }
     }
   }
 
@@ -265,117 +299,112 @@ class CustomerGenerationApp {
   displayCustomerCard() {
     if (!this.generatedCustomer) return
 
-    // 가상고객 카드 표시 영역 생성
-    const container = document.getElementById('customer-generation-app')
+    // 가상고객 카드 표시
+    const container = document.getElementById('generated-customer')
+    const personaContainer = document.getElementById('customer-persona')
+    
+    if (!container || !personaContainer) return
+    
+    // 생성된 고객 컨테이너 표시
+    container.style.display = 'block'
     
     const cardHTML = `
-      <div class="bg-white rounded-lg shadow-lg p-8 mt-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">
-          <i class="fas fa-robot text-purple-600 mr-2"></i>
-          생성된 AI 가상고객
-        </h2>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="pwc-grid pwc-grid-2" style="margin-bottom: var(--spacing-xl);">
           <!-- 기본 정보 -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">기본 프로필</h3>
-            <div class="space-y-3">
-              <div class="flex items-center">
-                <span class="w-24 text-sm font-medium text-gray-600">이름:</span>
-                <span class="text-gray-900">${this.generatedCustomer.name}</span>
+          <div style="background: var(--neutral-50); border-radius: var(--border-radius-md); padding: var(--spacing-lg); border: 2px solid var(--pwc-orange-light);">
+            <h3 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
+              <i class="fas fa-id-card" style="color: var(--pwc-orange);"></i>기본 프로필
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+              <div style="display: flex; align-items: center;">
+                <span style="min-width: 80px; font-weight: 500; color: var(--text-muted); word-break: keep-all;">이름:</span>
+                <span style="color: var(--pwc-navy); font-weight: 600;">${this.generatedCustomer.name}</span>
               </div>
-              <div class="flex items-center">
-                <span class="w-24 text-sm font-medium text-gray-600">회사:</span>
-                <span class="text-gray-900">${this.generatedCustomer.company_name}</span>
+              <div style="display: flex; align-items: center;">
+                <span style="min-width: 80px; font-weight: 500; color: var(--text-muted); word-break: keep-all;">회사:</span>
+                <span style="color: var(--pwc-navy); font-weight: 600;">${this.generatedCustomer.company_name}</span>
               </div>
-              <div class="flex items-center">
-                <span class="w-24 text-sm font-medium text-gray-600">부서:</span>
-                <span class="text-gray-900">${this.generatedCustomer.department}</span>
+              <div style="display: flex; align-items: center;">
+                <span style="min-width: 80px; font-weight: 500; color: var(--text-muted); word-break: keep-all;">부서:</span>
+                <span style="color: var(--pwc-navy); font-weight: 600;">${this.generatedCustomer.department}</span>
               </div>
-              <div class="flex items-center">
-                <span class="w-24 text-sm font-medium text-gray-600">버전:</span>
-                <span class="text-gray-900">${this.generatedCustomer.version}</span>
+              <div style="display: flex; align-items: center;">
+                <span style="min-width: 80px; font-weight: 500; color: var(--text-muted); word-break: keep-all;">버전:</span>
+                <span style="color: var(--pwc-navy); font-weight: 600;">${this.generatedCustomer.version}</span>
               </div>
             </div>
           </div>
 
           <!-- 페르소나 특성 -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">페르소나 특성</h3>
-            <div class="space-y-3">
+          <div style="background: var(--neutral-50); border-radius: var(--border-radius-md); padding: var(--spacing-lg); border: 2px solid var(--pwc-blue-light);">
+            <h3 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
+              <i class="fas fa-brain" style="color: var(--pwc-blue);"></i>페르소나 특성
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
               <div>
-                <span class="block text-sm font-medium text-gray-600 mb-1">한 줄 요약</span>
-                <p class="text-gray-900 text-sm">${this.generatedCustomer.persona_summary}</p>
+                <span style="display: block; font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); word-break: keep-all;">한 줄 요약</span>
+                <p style="color: var(--text-color); line-height: 1.4; word-break: keep-all;">${this.generatedCustomer.persona_summary}</p>
               </div>
               <div>
-                <span class="block text-sm font-medium text-gray-600 mb-1">의사결정 방식</span>
-                <p class="text-gray-900 text-sm">${this.generatedCustomer.decision_making_style}</p>
+                <span style="display: block; font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); word-break: keep-all;">의사결정 방식</span>
+                <p style="color: var(--text-color); line-height: 1.4; word-break: keep-all;">${this.generatedCustomer.decision_making_style}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Top 3 우선순위 -->
-        <div class="mt-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">핵심 우선순위 Top 3</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div style="margin-bottom: var(--spacing-xl);">
+          <h3 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
+            <i class="fas fa-trophy" style="color: var(--pwc-orange);"></i>핵심 우선순위 Top 3
+          </h3>
+          <div class="pwc-grid pwc-grid-3" style="gap: var(--spacing-md);">
             ${this.generatedCustomer.top3_priorities.map((priority, index) => `
-              <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-4">
-                <div class="flex items-center mb-2">
-                  <span class="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-medium mr-2">
+              <div style="background: linear-gradient(135deg, var(--pwc-orange-light), var(--pwc-blue-light)); border-radius: var(--border-radius-md); padding: var(--spacing-lg); color: var(--pwc-navy); position: relative; overflow: hidden;">
+                <div style="display: flex; align-items: center; margin-bottom: var(--spacing-sm);">
+                  <span style="width: 24px; height: 24px; background: var(--pwc-orange); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: var(--spacing-sm);">
                     ${index + 1}
                   </span>
-                  <span class="font-medium text-gray-900">우선순위 ${index + 1}</span>
+                  <span style="font-weight: 600; word-break: keep-all;">우선순위 ${index + 1}</span>
                 </div>
-                <p class="text-sm text-gray-700">${priority}</p>
+                <p style="font-size: 0.875rem; line-height: 1.4; word-break: keep-all;">${priority}</p>
+                <i class="fas fa-star" style="position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); color: var(--pwc-orange); opacity: 0.3; font-size: 1.2rem;"></i>
               </div>
             `).join('')}
           </div>
         </div>
 
         <!-- 30속성 요약 -->
-        <div class="mt-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">통합 속성 프로필</h3>
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div class="bg-gray-50 rounded p-3 text-center">
-              <div class="text-sm font-medium text-gray-600">전략 포커스</div>
-              <div class="text-sm text-gray-900 mt-1">${this.generatedCustomer.combined_attributes.strategic_focus}</div>
+        <div style="margin-bottom: var(--spacing-xl);">
+          <h3 style="font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
+            <i class="fas fa-chart-pie" style="color: var(--success-color);"></i>통합 속성 프로필
+          </h3>
+          <div class="pwc-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-md);">
+            <div style="background: var(--neutral-100); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center; border: 1px solid var(--neutral-200);">
+              <div style="font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); font-size: 0.875rem; word-break: keep-all;">전략 포커스</div>
+              <div style="color: var(--pwc-navy); font-weight: 600; word-break: keep-all;">${this.generatedCustomer.combined_attributes.strategic_focus}</div>
             </div>
-            <div class="bg-gray-50 rounded p-3 text-center">
-              <div class="text-sm font-medium text-gray-600">위험 성향</div>
-              <div class="text-sm text-gray-900 mt-1">${this.generatedCustomer.combined_attributes.risk_appetite}</div>
+            <div style="background: var(--neutral-100); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center; border: 1px solid var(--neutral-200);">
+              <div style="font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); font-size: 0.875rem; word-break: keep-all;">위험 성향</div>
+              <div style="color: var(--pwc-navy); font-weight: 600; word-break: keep-all;">${this.generatedCustomer.combined_attributes.risk_appetite}</div>
             </div>
-            <div class="bg-gray-50 rounded p-3 text-center">
-              <div class="text-sm font-medium text-gray-600">혁신 선호</div>
-              <div class="text-sm text-gray-900 mt-1">${this.generatedCustomer.combined_attributes.innovation_preference}</div>
+            <div style="background: var(--neutral-100); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center; border: 1px solid var(--neutral-200);">
+              <div style="font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); font-size: 0.875rem; word-break: keep-all;">혁신 선호</div>
+              <div style="color: var(--pwc-navy); font-weight: 600; word-break: keep-all;">${this.generatedCustomer.combined_attributes.innovation_preference}</div>
             </div>
-            <div class="bg-gray-50 rounded p-3 text-center">
-              <div class="text-sm font-medium text-gray-600">예산 민감도</div>
-              <div class="text-sm text-gray-900 mt-1">${this.generatedCustomer.combined_attributes.budget_sensitivity}</div>
+            <div style="background: var(--neutral-100); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center; border: 1px solid var(--neutral-200);">
+              <div style="font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); font-size: 0.875rem; word-break: keep-all;">예산 민감도</div>
+              <div style="color: var(--pwc-navy); font-weight: 600; word-break: keep-all;">${this.generatedCustomer.combined_attributes.budget_sensitivity}</div>
             </div>
-            <div class="bg-gray-50 rounded p-3 text-center">
-              <div class="text-sm font-medium text-gray-600">기술 도입</div>
-              <div class="text-sm text-gray-900 mt-1">${this.generatedCustomer.combined_attributes.technology_adoption}</div>
+            <div style="background: var(--neutral-100); border-radius: var(--border-radius-md); padding: var(--spacing-md); text-align: center; border: 1px solid var(--neutral-200);">
+              <div style="font-weight: 600; color: var(--text-muted); margin-bottom: var(--spacing-xs); font-size: 0.875rem; word-break: keep-all;">기술 도입</div>
+              <div style="color: var(--pwc-navy); font-weight: 600; word-break: keep-all;">${this.generatedCustomer.combined_attributes.technology_adoption}</div>
             </div>
           </div>
         </div>
-
-        <!-- 액션 버튼 -->
-        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-          <button onclick="customerApp.saveCustomer()" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-            <i class="fas fa-save mr-2"></i>가상고객 저장
-          </button>
-          <button onclick="customerApp.goToProposalEvaluation()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-            <i class="fas fa-arrow-right mr-2"></i>제안서 평가 시작
-          </button>
-          <button onclick="customerApp.exportCustomer()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-            <i class="fas fa-download mr-2"></i>JSON 내보내기
-          </button>
-        </div>
-      </div>
     `
     
-    container.insertAdjacentHTML('beforeend', cardHTML)
+    personaContainer.innerHTML = cardHTML
   }
 
   async saveCustomer() {
@@ -410,12 +439,29 @@ class CustomerGenerationApp {
   showLoading(message = '처리 중...') {
     const overlay = document.createElement('div')
     overlay.id = 'loading-overlay'
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    `
     overlay.innerHTML = `
-      <div class="bg-white rounded-lg p-6 shadow-xl">
-        <div class="flex items-center">
-          <i class="fas fa-spinner fa-spin text-blue-600 text-2xl mr-3"></i>
-          <span class="text-lg font-medium">${message}</span>
+      <div style="
+        background: var(--pwc-white);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-xl);
+        box-shadow: var(--shadow-xl);
+        border: 3px solid var(--pwc-orange);
+      ">
+        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+          <i class="fas fa-spinner fa-spin" style="color: var(--pwc-orange); font-size: 1.5rem;"></i>
+          <span style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy);">${message}</span>
         </div>
       </div>
     `
@@ -491,11 +537,25 @@ class CustomerGenerationApp {
 
   showSuccessMessage(message) {
     const successDiv = document.createElement('div')
-    successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity'
+    successDiv.style.cssText = `
+      position: fixed;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background: linear-gradient(135deg, var(--success-color), var(--pwc-success));
+      color: var(--pwc-white);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+      border: 2px solid var(--success-color-light);
+      max-width: 400px;
+      word-break: keep-all;
+    `
     successDiv.innerHTML = `
-      <div class="flex items-center">
-        <i class="fas fa-check-circle mr-2"></i>
-        <span>${message}</span>
+      <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+        <i class="fas fa-check-circle" style="font-size: 1.25rem;"></i>
+        <span style="font-weight: 600;">${message}</span>
       </div>
     `
     
