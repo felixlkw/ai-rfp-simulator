@@ -125,7 +125,7 @@ class ProposalEvaluationApp {
         </div>
       `
       
-      customerInfo.classList.remove('hidden')
+      customerInfo.style.display = 'block'
       this.checkEvaluationReady()
 
     } catch (error) {
@@ -239,18 +239,18 @@ class ProposalEvaluationApp {
     const fileSizeMB = (this.uploadedProposal.size / (1024 * 1024)).toFixed(2)
     
     fileDetails.innerHTML = `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+      <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-md);">
+        <div style="word-break: keep-all;">
           <strong>파일명:</strong> ${this.uploadedProposal.name}
         </div>
-        <div>
+        <div style="word-break: keep-all;">
           <strong>크기:</strong> ${fileSizeMB}MB
         </div>
-        <div>
+        <div style="word-break: keep-all;">
           <strong>형식:</strong> ${this.uploadedProposal.type.toUpperCase()}
         </div>
-        <div>
-          <strong>상태:</strong> <span class="text-green-600">업로드 완료</span>
+        <div style="word-break: keep-all;">
+          <strong>상태:</strong> <span style="color: var(--success-color); font-weight: 600;">업로드 완료</span>
         </div>
       </div>
     `
@@ -339,22 +339,41 @@ class ProposalEvaluationApp {
     // 종합 코멘트 표시
     document.getElementById('overall-comment').textContent = this.evaluationResult.overall_comment
 
-    resultsSection.classList.remove('hidden')
+    resultsSection.style.display = 'block'
     resultsSection.scrollIntoView({ behavior: 'smooth' })
   }
 
   showLoading(message = '처리 중...') {
     const overlay = document.createElement('div')
     overlay.id = 'loading-overlay'
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    `
     overlay.innerHTML = `
-      <div class="bg-white rounded-lg p-6 shadow-xl max-w-md">
-        <div class="flex items-center mb-4">
-          <i class="fas fa-spinner fa-spin text-purple-600 text-2xl mr-3"></i>
-          <span class="text-lg font-medium">${message}</span>
+      <div style="
+        background: var(--pwc-white);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-xl);
+        box-shadow: var(--shadow-xl);
+        border: 3px solid var(--pwc-navy);
+        max-width: 400px;
+        width: 90%;
+      ">
+        <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+          <i class="fas fa-spinner fa-spin" style="color: var(--pwc-navy); font-size: 1.5rem;"></i>
+          <span style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">${message}</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-purple-600 h-2 rounded-full animate-pulse" style="width: 70%"></div>
+        <div style="width: 100%; height: 8px; background: var(--neutral-200); border-radius: 4px; overflow: hidden;">
+          <div style="height: 100%; background: linear-gradient(90deg, var(--pwc-navy), var(--pwc-orange)); border-radius: 4px; width: 70%; animation: pulse 1.5s ease-in-out infinite;"></div>
         </div>
       </div>
     `
@@ -374,11 +393,25 @@ class ProposalEvaluationApp {
 
   showSuccessMessage(message) {
     const successDiv = document.createElement('div')
-    successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity'
+    successDiv.style.cssText = `
+      position: fixed;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background: linear-gradient(135deg, var(--success-color), var(--pwc-success));
+      color: var(--pwc-white);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+      border: 2px solid var(--success-color-light);
+      max-width: 400px;
+      word-break: keep-all;
+    `
     successDiv.innerHTML = `
-      <div class="flex items-center">
-        <i class="fas fa-check-circle mr-2"></i>
-        <span>${message}</span>
+      <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+        <i class="fas fa-check-circle" style="font-size: 1.25rem;"></i>
+        <span style="font-weight: 600;">${message}</span>
       </div>
     `
     

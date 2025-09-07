@@ -136,12 +136,12 @@ class PersonaManager {
 
         if (this.personas.length === 0) {
             container.innerHTML = `
-                <div class="col-span-full text-center py-12">
-                    <i class="fas fa-user-friends text-6xl text-gray-400 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">페르소나가 없습니다</h3>
-                    <p class="text-gray-500 mb-4">새로운 페르소나를 추가해보세요.</p>
-                    <button class="btn-primary" onclick="personaManager.showPersonaModal()">
-                        <i class="fas fa-plus mr-2"></i>페르소나 추가
+                <div style="grid-column: 1 / -1; text-align: center; padding: var(--spacing-3xl) var(--spacing-lg);">
+                    <i class="fas fa-user-friends" style="font-size: 4rem; color: var(--pwc-gray-400); margin-bottom: var(--spacing-lg);"></i>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--pwc-gray-600); margin-bottom: var(--spacing-sm); word-break: keep-all;">페르소나가 없습니다</h3>
+                    <p style="color: var(--pwc-gray-500); margin-bottom: var(--spacing-lg); word-break: keep-all;">새로운 페르소나를 추가해보세요.</p>
+                    <button class="pwc-btn pwc-btn-primary" onclick="personaManager.showPersonaModal()" style="display: inline-flex; align-items: center; gap: var(--spacing-sm);">
+                        <i class="fas fa-plus"></i>페르소나 추가
                     </button>
                 </div>
             `;
@@ -149,66 +149,72 @@ class PersonaManager {
         }
 
         container.innerHTML = this.personas.map(persona => `
-            <div class="persona-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-200 cursor-pointer"
-                 onclick="personaManager.viewPersona('${persona.id}')">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-pwc-dark mb-1">${persona.name}</h3>
-                        <p class="text-sm text-gray-600">${persona.company || ''} ${persona.rank || ''}</p>
-                        <p class="text-xs text-gray-500">${persona.department || ''}</p>
+            <div class="pwc-card" style="cursor: pointer; transition: all 0.3s ease;"
+                 onclick="personaManager.viewPersona('${persona.id}')" 
+                 onmouseenter="this.style.boxShadow='var(--shadow-lg)'; this.style.borderColor='var(--pwc-orange)'" 
+                 onmouseleave="this.style.boxShadow='var(--shadow-sm)'; this.style.borderColor='var(--neutral-200)'">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--spacing-lg);">
+                    <div style="flex: 1;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">${persona.name}</h3>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); word-break: keep-all;">${persona.company || ''} ${persona.rank || ''}</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); word-break: keep-all;">${persona.department || ''}</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button class="text-blue-600 hover:text-blue-800 p-1" 
+                    <div style="display: flex; gap: var(--spacing-sm);">
+                        <button style="color: var(--pwc-blue); padding: var(--spacing-xs);" 
                                 onclick="event.stopPropagation(); personaManager.editPersona('${persona.id}')"
-                                title="편집">
+                                title="편집"
+                                onmouseenter="this.style.color='var(--pwc-navy)'"
+                                onmouseleave="this.style.color='var(--pwc-blue)'">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="text-red-600 hover:text-red-800 p-1" 
+                        <button style="color: var(--error-color); padding: var(--spacing-xs);" 
                                 onclick="event.stopPropagation(); personaManager.deletePersona('${persona.id}')"
-                                title="삭제">
+                                title="삭제"
+                                onmouseenter="this.style.color='var(--error-color-dark)'"
+                                onmouseleave="this.style.color='var(--error-color)'">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">${persona.decision_influence || 0}</div>
-                        <div class="text-xs text-gray-500">의사결정력</div>
+                <div class="pwc-grid pwc-grid-2" style="gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-blue);">${persona.decision_influence || 0}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: keep-all;">의사결정력</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">${persona.technical_expertise || 0}</div>
-                        <div class="text-xs text-gray-500">기술전문성</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">${persona.technical_expertise || 0}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: keep-all;">기술전문성</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-purple-600">${persona.budget_authority || 0}</div>
-                        <div class="text-xs text-gray-500">예산권한</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--info-color);">${persona.budget_authority || 0}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: keep-all;">예산권한</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-orange-600">${persona.innovation_openness || 0}</div>
-                        <div class="text-xs text-gray-500">혁신개방성</div>
-                    </div>
-                </div>
-
-                <div class="border-t pt-3">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-600">커뮤니케이션</span>
-                        <span class="font-medium">${persona.communication_style || '미정'}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-sm mt-1">
-                        <span class="text-gray-600">위험감수성</span>
-                        <span class="font-medium">${persona.risk_tolerance || 0}/10</span>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange);">${persona.innovation_openness || 0}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: keep-all;">혁신개방성</div>
                     </div>
                 </div>
 
-                <div class="mt-3 pt-3 border-t">
-                    <p class="text-xs text-gray-500 truncate">
+                <div style="border-top: 1px solid var(--neutral-200); padding-top: var(--spacing-md);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+                        <span style="color: var(--text-muted); word-break: keep-all;">커뮤니케이션</span>
+                        <span style="font-weight: 500; color: var(--text-color); word-break: keep-all;">${persona.communication_style || '미정'}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem; margin-top: var(--spacing-xs);">
+                        <span style="color: var(--text-muted); word-break: keep-all;">위험감수성</span>
+                        <span style="font-weight: 500; color: var(--text-color); word-break: keep-all;">${persona.risk_tolerance || 0}/10</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--neutral-200);">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-break: keep-all;">
                         ${persona.strategic_priority || '전략적 우선순위 미정'}
                     </p>
                 </div>
 
-                <div class="flex items-center justify-between mt-3 text-xs text-gray-400">
-                    <span>경력 ${persona.industry_experience || 0}년</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: var(--spacing-md); font-size: 0.75rem; color: var(--pwc-gray-400);">
+                    <span style="word-break: keep-all;">경력 ${persona.industry_experience || 0}년</span>
                     <span>${this.formatDate(persona.created_at)}</span>
                 </div>
             </div>
