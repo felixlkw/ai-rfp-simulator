@@ -145,21 +145,21 @@ export class OpenAIService {
 `
 
     const fallbackData: DeepResearchData = {
-      vision_mission: `${companyName}의 비전과 미션 분석 결과`,
-      core_business: `${companyName}의 핵심 사업영역 분석`,
-      market_positioning: `${companyName}의 시장 포지셔닝 분석`,
-      financial_strategy: `${companyName}의 재무 전략 성향 분석`,
-      rd_orientation: `${companyName}의 R&D 지향성 분석`,
-      esg_priority: `${companyName}의 ESG 우선순위 분석`,
-      risk_management: `${companyName}의 리스크 관리 태도 분석`,
-      innovation_change: `${companyName}의 혁신·변화 성향 분석`,
-      partnership_strategy: `${companyName}의 파트너십 전략 분석`,
-      customer_experience: `${companyName}의 고객 경험 중시도 분석`,
-      brand_values: `${companyName}의 브랜드 가치관 분석`,
-      organizational_culture: `${companyName}의 조직 문화 특성 분석`,
-      decision_structure: `${companyName}의 의사결정 구조 분석`,
-      global_localization: `${companyName}의 글로벌·현지화 전략 분석`,
-      digital_transformation: `${companyName}의 디지털 전환 수준 분석`
+      1: { id: "1", name: "비전·미션", content: `${companyName}의 비전과 미션 분석 결과`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      2: { id: "2", name: "핵심 사업영역", content: `${companyName}의 핵심 사업영역 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      3: { id: "3", name: "시장 포지셔닝", content: `${companyName}의 시장 포지셔닝 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      4: { id: "4", name: "재무 전략 성향", content: `${companyName}의 재무 전략 성향 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      5: { id: "5", name: "R&D 지향성", content: `${companyName}의 R&D 지향성 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      6: { id: "6", name: "ESG 우선순위", content: `${companyName}의 ESG 우선순위 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      7: { id: "7", name: "리스크 관리 태도", content: `${companyName}의 리스크 관리 태도 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      8: { id: "8", name: "글로벌 vs 로컬 지향성", content: `${companyName}의 글로벌·로컬 지향성 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      9: { id: "9", name: "고객/이해관계자 성향", content: `${companyName}의 고객/이해관계자 성향 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      10: { id: "10", name: "디지털 전환 수준", content: `${companyName}의 디지털 전환 수준 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      11: { id: "11", name: "조직문화·HR 방향", content: `${companyName}의 조직문화·HR 방향 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      12: { id: "12", name: "파트너십/생태계 전략", content: `${companyName}의 파트너십/생태계 전략 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      13: { id: "13", name: "규제·정책 대응 성향", content: `${companyName}의 규제·정책 대응 성향 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      14: { id: "14", name: "사회적 이미지/브랜드 톤", content: `${companyName}의 사회적 이미지/브랜드 톤 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() },
+      15: { id: "15", name: "단기 vs 장기 목표 균형", content: `${companyName}의 단기 vs 장기 목표 균형 분석`, source_url: "fallback", source_type: "fallback", reliability_score: 7, llm_confidence: 0.8, extracted_at: new Date().toISOString() }
     }
 
     try {
@@ -340,9 +340,9 @@ ${JSON.stringify(rfpAnalysis, null, 2)}
     const fallbackCustomer: AIVirtualCustomer = {
       customer_id: crypto.randomUUID(),
       customer_type: customerType,
-      company_name: deepResearch.vision_mission ? 
-        deepResearch.vision_mission.split(' ')[0] : 'Sample Company',
-      project_name: rfpAnalysis.objectives || 'Sample Project',
+      company_name: deepResearch[1]?.content ? 
+        deepResearch[1].content.split(' ')[0] : 'Sample Company',
+      project_name: rfpAnalysis[4]?.content || 'Sample Project',
       deep_research_data: deepResearch,
       rfp_analysis_data: rfpAnalysis,
       integrated_persona: {
