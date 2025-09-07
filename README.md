@@ -10,8 +10,8 @@
   - **레이더 차트 + 상세 피드백**: 시각화 및 맞춤형 개선 방안
 
 ## URLs
-- **Production**: https://3000-i9nxth45bm312i7sylait-6532622b.e2b.dev
-- **GitHub**: Not yet deployed (Local development)
+- **Production**: https://ai-rfp-simulator-v2.pages.dev (Cloudflare Pages)
+- **GitHub**: https://github.com/felixlkw/ai-rfp-simulator
 - **Demo Video**: [발표 평가 시연 URL 제공 예정]
 
 ## 현재 구현된 기능 ✅
@@ -182,10 +182,15 @@ npm run db:seed           # 테스트 데이터 삽입
 - **파일 파싱**: PDF/DOCX 문서 처리 엔진
 - **AI 연동**: OpenAI GPT 모델 통합
 
-#### 📝 계획된 기능 (0%)
-- **GitHub 연동**: 코드 버전 관리
-- **Cloudflare 배포**: 프로덕션 환경 배포
-- **사용자 인증**: 다중 사용자 지원
+#### ✅ 완료된 배포 기능 (100%)
+- **GitHub 연동**: 코드 버전 관리 완료 (https://github.com/felixlkw/ai-rfp-simulator)
+- **Cloudflare 배포**: 프로덕션 환경 배포 완료 (https://ai-rfp-simulator-v2.pages.dev)
+- **OpenAI 통합**: GPT-4o 모델 연동 및 실제 AI 분석 시스템 구현
+
+#### 📝 향후 개선 계획 (0%)
+- **사용자 인증**: 다중 사용자 지원 및 개인화 기능
+- **고급 분석**: 더 정교한 AI 평가 알고리즘
+- **모바일 앱**: 네이티브 모바일 애플리케이션
 
 ## 개발 현황 요약
 
