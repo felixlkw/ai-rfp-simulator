@@ -148,24 +148,53 @@ export class WebCrawlerService {
    * 기업명 기반 추정 URL 생성
    */
   private async generateCompanyUrls(companyName: string): Promise<string[]> {
-    // 한국 기업 도메인 패턴
-    const domainPatterns = [
-      `${companyName.toLowerCase().replace(/\s+/g, '')}.com`,
-      `${companyName.toLowerCase().replace(/\s+/g, '')}.co.kr`,
-      `${companyName.toLowerCase().replace(/\s+/g, '')}.kr`,
-      `www.${companyName.toLowerCase().replace(/\s+/g, '')}.com`,
-      `www.${companyName.toLowerCase().replace(/\s+/g, '')}.co.kr`
-    ]
+    // 한국 대기업 도메인 매핑
+    const companyDomainMap: Record<string, string[]> = {
+      '삼성전자': ['samsung.com', 'sec.co.kr'],
+      '삼성': ['samsung.com', 'sec.co.kr'],
+      'LG전자': ['lge.co.kr', 'lg.com'],
+      'LG': ['lg.com', 'lge.co.kr'],
+      '현대자동차': ['hyundai.com', 'hyundai-motor.com'],
+      '현대': ['hyundai.com', 'hyundai-motor.com'],
+      'SK': ['sk.co.kr', 'sk.com'],
+      'SK텔레콤': ['sktelecom.com', 'tworld.co.kr'],
+      'KT': ['kt.com', 'kt.co.kr'],
+      '포스코': ['posco.co.kr', 'posco.com'],
+      '네이버': ['naver.com', 'navercorp.com'],
+      '카카오': ['kakaocorp.com', 'kakao.com'],
+      '금고석유화학': ['geumgo.co.kr', 'geumgo-petro.com'], // 데모 회사
+      'PwC': ['pwc.com', 'pwc.co.kr'],
+      '딜로이트': ['deloitte.com', 'deloitte.co.kr']
+    }
+
+    // 영문 회사명인 경우 기본 패턴 적용
+    const isKorean = /[\u3131-\u3163\uac00-\ud7a3]/g.test(companyName)
+    let domains: string[] = []
+    
+    if (isKorean && companyDomainMap[companyName]) {
+      domains = companyDomainMap[companyName]
+    } else if (isKorean) {
+      // 한글 회사명이지만 매핑에 없는 경우 - 일반적인 패턴 사용 (영문 변환 없이 스킵)
+      console.log(`${companyName}: 도메인 매핑 정보가 없습니다. 기본 URL을 사용합니다.`)
+      return [
+        'https://example.com', // 실제로는 크롤링하지 않지만 오류 방지용
+      ]
+    } else {
+      // 영문 회사명 - 기본 패턴 적용
+      const cleanName = companyName.toLowerCase().replace(/\s+/g, '')
+      domains = [`${cleanName}.com`, `${cleanName}.co.kr`]
+    }
 
     const urls = []
     
-    for (const domain of domainPatterns.slice(0, 3)) { // 처음 3개만 시도
+    for (const domain of domains.slice(0, 2)) { // 최대 2개 도메인
       urls.push(`https://${domain}`)
       urls.push(`https://${domain}/about`) 
       urls.push(`https://${domain}/company`)
+      urls.push(`https://${domain}/kr/company`) // 한국 사이트 경우
     }
 
-    return urls
+    return urls.slice(0, 6) // 최대 6개 URL
   }
 
   /**

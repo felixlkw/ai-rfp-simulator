@@ -326,8 +326,7 @@ app.post('/api/customers/generate', async (c) => {
       customer = await openai.generateVirtualCustomer(
         deep_research_data,
         rfp_analysis_data,
-        company_name,
-        department || '경영기획'
+        'CTO' // customer type
       )
       console.log('LLM AI 가상고객 생성 완룼')
     } else {
@@ -973,34 +972,61 @@ app.post('/api/upload/file', async (c) => {
   }
 })
 
-// RFP 파일 분석
+// RFP 문서 분석 (텍스트 기반)
 app.post('/api/parse/rfp', async (c) => {
   try {
-    const { file_data, file_name } = await c.req.json()
+    const { text, file_name } = await c.req.json()
+    const { env } = c
     
-    // Base64 디코딩 또는 파일 데이터 처리
-    const fileParser = new FileParserService()
+    if (!text) {
+      return c.json({
+        success: false,
+        error: 'RFP 텍스트 내용이 필요합니다.'
+      }, 400)
+    }
     
-    // 시뮬레이션된 파싱 결과
-    const simulatedFile = new File([file_data || ''], file_name || 'rfp.pdf')
-    const parsedDocument = await fileParser.parseFile(simulatedFile)
+    // OpenAI API로 RFP 분석 (실제 분석)
+    if (env.OPENAI_API_KEY && text.length > 100) {
+      const openai = new OpenAIService(env.OPENAI_API_KEY)
+      const rfpAnalysisData = await openai.extractRfpAnalysisData(text, file_name || 'rfp.txt')
+      
+      return c.json({
+        success: true,
+        data: {
+          parsed_document: {
+            title: file_name || 'RFP 문서',
+            content: text,
+            word_count: text.length,
+            parsed_at: new Date().toISOString()
+          },
+          rfp_analysis_data: rfpAnalysisData
+        },
+        message: 'RFP 문서가 성공적으로 분석되었습니다 (OpenAI GPT-4o).'
+      })
+    }
     
-    // RFP 속성 추출
-    const rfpAttributes = fileParser.extractRfpAttributes(parsedDocument)
+    // 기본 키워드 매칭 분석 (fallback)
+    const basicAnalysis = await generateBasicRfpAnalysis(text, file_name || 'rfp.txt')
     
     return c.json({
       success: true,
       data: {
-        parsed_document: parsedDocument,
-        rfp_attributes: rfpAttributes
+        parsed_document: {
+          title: file_name || 'RFP 문서',
+          content: text,
+          word_count: text.length,
+          parsed_at: new Date().toISOString()
+        },
+        rfp_analysis_data: basicAnalysis
       },
-      message: 'RFP 파일이 성공적으로 분석되었습니다.'
+      message: 'RFP 문서가 분석되었습니다 (키워드 매칭).'
     })
 
   } catch (error) {
+    console.error('RFP 문서 분석 오류:', error)
     return c.json({
       success: false,
-      error: '파일 분석 중 오류가 발생했습니다: ' + error.message
+      error: `RFP 문서 분석에 실패했습니다: ${error.message}`
     }, 500)
   }
 })
