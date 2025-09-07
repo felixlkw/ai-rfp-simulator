@@ -142,6 +142,8 @@ class PresentationEvaluationApp {
   }
 
   async requestMediaAccess() {
+    let helpMessageTimeout = null
+    
     try {
       console.log('미디어 접근 요청 시작')
       this.showLoading('카메라와 마이크 권한 요청 중...<br><br>🔒 <strong>브라우저 상단에 권한 팝업이 나타나면 "허용"을 클릭해주세요</strong>')
@@ -153,10 +155,14 @@ class PresentationEvaluationApp {
 
       console.log('getUserMedia 호출 - 권한 요청')
       
-      // 단계별 안내 메시지 업데이트
-      setTimeout(() => {
-        this.showLoading('브라우저 권한 대기 중...<br><br>📋 <strong>팝업이 보이지 않으면:</strong><br>1. 브라우저 주소창 옆 카메라 아이콘 클릭<br>2. "허용"으로 설정 변경<br>3. 페이지 새로고침')
-      }, 2000)
+      // 3초 후 추가 안내 메시지 (권한이 허용되면 취소됨)
+      helpMessageTimeout = setTimeout(() => {
+        // 로딩 상태인 경우에만 업데이트
+        const loadingOverlay = document.getElementById('loading-overlay')
+        if (loadingOverlay) {
+          this.showLoading('브라우저 권한 대기 중...<br><br>📋 <strong>팝업이 보이지 않으면:</strong><br>1. 브라우저 주소창 옆 카메라 아이콘 클릭<br>2. "허용"으로 설정 변경<br>3. 페이지 새로고침')
+        }
+      }, 3000)
       
       // 미디어 스트림 요청
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -164,8 +170,13 @@ class PresentationEvaluationApp {
         audio: true
       })
       
+      // 권한 허용 성공 시 타이머 취소
+      clearTimeout(helpMessageTimeout)
       console.log('미디어 스트림 획득 성공:', stream)
 
+      // 미디어 연결 중 단계
+      this.showLoading('미디어 연결 중...<br><br>⚡ 카메라와 마이크에 연결하고 있습니다.')
+      
       this.mediaStream = stream
       
       // 비디오 프리뷰 설정
@@ -197,6 +208,11 @@ class PresentationEvaluationApp {
       this.showSuccessMessage('✅ 카메라와 마이크 연결 성공!<br><br>🎯 이제 "녹화 시작" 버튼을 클릭하여 발표를 시작하세요.<br>📝 실시간 STT로 음성이 텍스트로 변환됩니다.')
 
     } catch (error) {
+      // 에러 발생 시에도 타이머 정리
+      if (helpMessageTimeout) {
+        clearTimeout(helpMessageTimeout)
+      }
+      
       console.error('미디어 접근 오류:', error)
       this.hideLoading()
       
@@ -654,6 +670,9 @@ class PresentationEvaluationApp {
   }
 
   showLoading(message = '처리 중...') {
+    // 기존 로딩 오버레이 제거
+    this.hideLoading()
+    
     const overlay = document.createElement('div')
     overlay.id = 'loading-overlay'
     overlay.style.cssText = `

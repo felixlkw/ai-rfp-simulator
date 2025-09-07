@@ -1527,9 +1527,9 @@ app.get('/presentation-evaluation', (c) => {
                         <div style="text-align: center;">
                             <button id="request-media" class="pwc-btn pwc-btn-primary">
                                 <i class="fas fa-video"></i>
-                                실시간 녹화 (WebRTC)
+                                카메라/마이크 연결
                             </button>
-                            <div style="font-size: 0.875rem; color: var(--pwc-gray-600); margin-top: var(--spacing-xs); word-break: keep-all;">카메라/마이크 권한 필요</div>
+                            <div style="font-size: 0.875rem; color: var(--pwc-gray-600); margin-top: var(--spacing-xs); word-break: keep-all;">브라우저 권한 허용 필요</div>
                         </div>
                         
                         <div style="display: flex; align-items: center; color: var(--pwc-gray-400); font-weight: bold;">또는</div>
