@@ -12,6 +12,7 @@ import { DemoDataService } from './services/demo-data'
 import { FileParserService } from './services/file-parser'
 import { PDFGeneratorService } from './services/pdf-generator'
 import { OpenAIService } from './services/openai-service'
+import { ChunkedOpenAIService } from './services/chunked-openai-service'
 import { StreamingOpenAIService } from './services/streaming-openai-service'
 import { PRODUCTION_CONFIG, PerformanceMonitor, isProductionEnvironment, isWorkersUnbound, UNBOUND_CONFIG } from './config/production-config'
 import { WebCrawlerService } from './services/web-crawler'
@@ -261,18 +262,22 @@ app.post('/api/customers/deep-research', async (c) => {
     
     if (env.OPENAI_API_KEY) {
       try {
-        console.log(`🚀 Workers Unbound 30초 - GPT-4o 기업 지식 딥리서치 시작: ${request.company_name}`)
+        console.log(`🚀 분할 처리 딥리서치 시작: ${request.company_name}`)
         
-        // 딥리서치 서비스를 통한 GPT-4o 기업 지식 기반 분석 (웹크롤링 제거)
-        const deepResearch = new DeepResearchService(env.OPENAI_API_KEY)
-        const analysisResult = await deepResearch.collectCompanyData(
-          request.company_name,
-          [], // URL 없음 - GPT-4o 기업 지식만 활용
-          request.research_depth || 'comprehensive'
-        )
+        // 🔥 NEW: 분할 처리로 30초 이내 보장 - 3그룹 병렬 처리
+        const chunkedOpenAI = new ChunkedOpenAIService(env.OPENAI_API_KEY, isUnbound)
+        const deepResearchData = await chunkedOpenAI.generateDeepResearchChunked(request.company_name)
         
-        researchData = analysisResult
-        console.log(`🎯 GPT-4o 기업 지식 딥리서치 완료: ${analysisResult.total_content_length}자 분석`)
+        researchData = {
+          company_name: request.company_name,
+          research_depth: request.research_depth || 'comprehensive',
+          deep_research_data: deepResearchData,
+          collection_timestamp: new Date().toISOString(),
+          data_sources: [`GPT-4o 분할 처리: ${request.company_name}`],
+          total_content_length: Object.values(deepResearchData).reduce((sum, attr) => sum + attr.content.length, 0)
+        }
+        
+        console.log(`🎯 분할 처리 딥리서치 완료: ${researchData.total_content_length}자 분석`)
         
       } catch (openaiError) {
         console.error('OpenAI 분석 실패, 기본 분석으로 전환:', openaiError)
@@ -447,15 +452,15 @@ app.post('/api/customers/rfp-analysis', async (c) => {
     const isUnbound = isWorkersUnbound()
     
     if (env.OPENAI_API_KEY && extractedText.length > 50) {
-      // 🚀 NLP + LLM 통합 RFP 파싱 (Workers Unbound 30초 활용)
-      console.log(`🚀 NLP + LLM 통합 RFP 파싱 시작 (${isUnbound ? '30초' : '10초'} 제한)`)
+      // 🔥 NEW: 분할 처리 RFP 분석 - 3단계 순차 처리로 30초 이내 보장
+      console.log(`🚀 분할 처리 RFP 분석 시작 (25초 제한)`)
       
       try {
-        const openai = new OpenAIService(env.OPENAI_API_KEY)
-        rfpAnalysisData = await generateNLPRfpAnalysis(extractedText, fileName, openai)
-        console.log(`🎯 NLP + LLM RFP 15속성 재구성 완료`)
+        const chunkedOpenAI = new ChunkedOpenAIService(env.OPENAI_API_KEY, isUnbound)
+        rfpAnalysisData = await chunkedOpenAI.generateRfpAnalysisChunked(extractedText, fileName)
+        console.log(`🎯 분할 처리 RFP 15속성 분석 완료`)
       } catch (llmError) {
-        console.error('LLM 파싱 실패, NLP만 사용:', llmError)
+        console.error('분할 처리 RFP 분석 실패, NLP로 폴백:', llmError)
         rfpAnalysisData = await generateNLPRfpAnalysis(extractedText, fileName)
       }
     } else if (extractedText.length > 50) {
@@ -528,21 +533,22 @@ app.post('/api/customers/generate', async (c) => {
     // Workers Unbound 최적화된 가상고객 생성
     const isUnbound = isWorkersUnbound()
     
-    if (env.OPENAI_API_KEY && isUnbound) {
+    if (env.OPENAI_API_KEY) {
       try {
-        console.log('Workers Unbound (30초) - 고품질 가상고객 생성')
+        console.log('🚀 분할 처리 AI 가상고객 생성 (25초 제한)')
         
-        const openai = new OpenAIService(env.OPENAI_API_KEY)
-        customer = await openai.generateVirtualCustomer(
+        // 🔥 NEW: 분할 처리로 30초 이내 보장 - 3단계 순차 처리
+        const chunkedOpenAI = new ChunkedOpenAIService(env.OPENAI_API_KEY, isUnbound)
+        customer = await chunkedOpenAI.generateVirtualCustomerChunked(
           deep_research_data,
           rfp_analysis_data,
           department || 'CTO'
         )
         
-        console.log('Workers Unbound 고품질 가상고객 생성 완료')
+        console.log('🎯 분할 처리 AI 가상고객 생성 완료')
         
       } catch (openaiError) {
-        console.error('OpenAI 생성 실패, 기본 생성으로 전환:', openaiError)
+        console.error('분할 처리 가상고객 생성 실패, 폴백으로 전환:', openaiError)
         
         // Fallback: 기본 템플릿 생성
       // 프로덕션 환경: 즉시 응답하는 경량 가상고객 생성
