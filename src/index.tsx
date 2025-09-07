@@ -730,161 +730,207 @@ app.get('/', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>RFP기반 AI가상고객 제안 평가 시뮬레이터</title>
-        <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <script>
-          tailwind.config = {
-            theme: {
-              extend: {
-                colors: {
-                  'primary': '#2563eb',
-                  'secondary': '#f1f5f9'
-                }
-              }
-            }
-          }
-        </script>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-          body { font-family: 'Noto Sans KR', sans-serif; }
-        </style>
+        <link href="/static/pwc-global.css?v=3.0" rel="stylesheet">
     </head>
-    <body class="bg-gray-100 min-h-screen">
-        <!-- 헤더 -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="container mx-auto px-4 py-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <i class="fas fa-robot text-primary text-3xl"></i>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900">RFP기반 AI가상고객 제안 평가 시뮬레이터</h1>
-                            <p class="text-gray-600 text-sm">딥리서치 + RFP 분석으로 가상고객 생성 → 제안/발표 평가 → 통합 결과</p>
-                        </div>
+    <body>
+        <!-- PwC 스타일 헤더 -->
+        <header class="pwc-header">
+            <div class="pwc-container">
+                <h1>
+                    <div class="pwc-logo">
+                        <i class="fas fa-robot"></i>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">v2.0</span>
-                    </div>
-                </div>
+                    RFP기반 AI가상고객 제안 평가 시뮬레이터
+                </h1>
+                <p style="color: var(--pwc-gray-200); margin-top: var(--spacing-sm); font-size: 1rem;">
+                    딥리서치 + RFP 분석으로 가상고객 생성 → 제안/발표 평가 → 통합 결과
+                </p>
             </div>
         </header>
 
-        <!-- 진행 단계 -->
-        <div class="container mx-auto px-4 py-8">
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">평가 프로세스</h2>
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col items-center">
-                        <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-2">
-                            <i class="fas fa-user-plus"></i>
+        <!-- 네비게이션 -->
+        <nav class="pwc-nav">
+            <div class="pwc-container">
+                <ul class="pwc-nav-list">
+                    <li class="pwc-nav-item"><a href="/" class="active">홈</a></li>
+                    <li class="pwc-nav-item"><a href="/customer-generation">AI 가상고객</a></li>
+                    <li class="pwc-nav-item"><a href="/proposal-evaluation">제안서 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/presentation-evaluation">발표 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/results">통합 결과</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
+            <!-- 진행 단계 카드 -->
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-route" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        평가 프로세스
+                    </h2>
+                    <p class="pwc-card-subtitle">전문적인 4단계 평가 시스템으로 완벽한 제안 분석</p>
+                </div>
+                
+                <div class="pwc-flex pwc-flex-between pwc-flex-mobile-col" style="gap: var(--spacing-lg);">
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-dark)); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
+                            <i class="fas fa-user-plus" style="font-size: 1.5rem;"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">AI 가상고객 생성</span>
-                        <span class="text-xs text-gray-500">딥리서치 15 + RFP 15</span>
+                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">AI 가상고객 생성</h4>
+                        <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">딥리서치 15 + RFP 15</p>
                     </div>
-                    <div class="flex-1 h-px bg-gray-300 mx-4"></div>
-                    <div class="flex flex-col items-center">
-                        <div class="w-12 h-12 bg-gray-300 text-white rounded-full flex items-center justify-center mb-2">
-                            <i class="fas fa-file-alt"></i>
+                    
+                    <div class="pwc-mobile-hidden" style="height: 2px; background: linear-gradient(90deg, var(--pwc-gray-300), var(--pwc-orange)); flex: 1; align-self: center; margin: 0 var(--spacing-md);"></div>
+                    
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-navy), var(--pwc-navy-light)); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
+                            <i class="fas fa-file-alt" style="font-size: 1.5rem;"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">제안서 평가</span>
-                        <span class="text-xs text-gray-500">6대 지표 루브릭</span>
+                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">제안서 평가</h4>
+                        <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">6대 지표 루브릭</p>
                     </div>
-                    <div class="flex-1 h-px bg-gray-300 mx-4"></div>
-                    <div class="flex flex-col items-center">
-                        <div class="w-12 h-12 bg-gray-300 text-white rounded-full flex items-center justify-center mb-2">
-                            <i class="fas fa-microphone"></i>
+                    
+                    <div class="pwc-mobile-hidden" style="height: 2px; background: linear-gradient(90deg, var(--pwc-gray-300), var(--pwc-orange)); flex: 1; align-self: center; margin: 0 var(--spacing-md);"></div>
+                    
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-navy-light)); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
+                            <i class="fas fa-microphone" style="font-size: 1.5rem;"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">발표 평가</span>
-                        <span class="text-xs text-gray-500">STT + 음성분석</span>
+                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">발표 평가</h4>
+                        <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">STT + 음성분석</p>
                     </div>
-                    <div class="flex-1 h-px bg-gray-300 mx-4"></div>
-                    <div class="flex flex-col items-center">
-                        <div class="w-12 h-12 bg-gray-300 text-white rounded-full flex items-center justify-center mb-2">
-                            <i class="fas fa-chart-radar"></i>
+                    
+                    <div class="pwc-mobile-hidden" style="height: 2px; background: linear-gradient(90deg, var(--pwc-gray-300), var(--pwc-orange)); flex: 1; align-self: center; margin: 0 var(--spacing-md);"></div>
+                    
+                    <div class="pwc-flex pwc-flex-col pwc-flex-center" style="text-align: center; min-width: 140px;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--pwc-success), #007d3c); color: var(--pwc-white); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); box-shadow: var(--shadow-md);">
+                            <i class="fas fa-chart-radar" style="font-size: 1.5rem;"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">통합 결과</span>
-                        <span class="text-xs text-gray-500">레이더 차트 + 피드백</span>
+                        <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-xs); word-break: keep-all;">통합 결과</h4>
+                        <p style="font-size: 0.75rem; color: var(--pwc-gray-600); word-break: keep-all;">레이더 차트 + 피드백</p>
                     </div>
                 </div>
             </div>
 
             <!-- 기능 카드들 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/customer-generation'">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-blue-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+            <div class="pwc-grid pwc-grid-2" style="margin-bottom: var(--spacing-3xl);">
+                <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/customer-generation'">
+                    <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
+                        <div style="background: linear-gradient(135deg, var(--pwc-orange), var(--pwc-orange-dark)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-plus" style="color: var(--pwc-white); font-size: 1.5rem;"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900">AI 가상고객 생성</h3>
+                        <div style="flex: 1;">
+                            <h3 class="pwc-card-title" style="margin-bottom: var(--spacing-sm);">AI 가상고객 생성</h3>
+                            <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-md); word-break: keep-all;">딥리서치와 RFP 분석으로 30속성 가상고객 생성</p>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm mb-4">딥리서치와 RFP 분석으로 30속성 가상고객 생성</p>
-                    <ul class="text-xs text-gray-500 space-y-1">
-                        <li>• 딥리서치 15속성 수집</li>
-                        <li>• RFP 문서 15속성 분석</li>
-                        <li>• 30속성 통합 페르소나 생성</li>
+                    <ul style="list-style: none; color: var(--pwc-gray-600); font-size: 0.875rem; line-height: 1.6; padding-left: var(--spacing-lg);">
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                            딥리서치 15속성 수집
+                        </li>
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                            RFP 문서 15속성 분석
+                        </li>
+                        <li>
+                            <i class="fas fa-check" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                            30속성 통합 페르소나 생성
+                        </li>
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/proposal-evaluation'">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-green-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-file-alt text-green-600 text-xl"></i>
+                <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/proposal-evaluation'">
+                    <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
+                        <div style="background: linear-gradient(135deg, var(--pwc-success), #007d3c); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-file-alt" style="color: var(--pwc-white); font-size: 1.5rem;"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900">제안서 평가</h3>
+                        <div style="flex: 1;">
+                            <h3 class="pwc-card-title" style="margin-bottom: var(--spacing-sm);">제안서 평가</h3>
+                            <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-md); word-break: keep-all;">6대 지표 루브릭 기반 AI 평가</p>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm mb-4">6대 지표 루브릭 기반 AI 평가</p>
-                    <ul class="text-xs text-gray-500 space-y-1">
-                        <li>• 명확성·전문성·설득력</li>
-                        <li>• 논리성·창의성·신뢰성</li>
-                        <li>• 점수 + 상세 코멘트</li>
+                    <ul style="list-style: none; color: var(--pwc-gray-600); font-size: 0.875rem; line-height: 1.6; padding-left: var(--spacing-lg);">
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                            명확성·전문성·설득력
+                        </li>
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                            논리성·창의성·신뢰성
+                        </li>
+                        <li>
+                            <i class="fas fa-check" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                            100점 척도 + 상세 코멘트
+                        </li>
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/presentation-evaluation'">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-purple-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-microphone text-purple-600 text-xl"></i>
+                <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/presentation-evaluation'">
+                    <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
+                        <div style="background: linear-gradient(135deg, var(--pwc-blue), var(--pwc-navy-light)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-microphone" style="color: var(--pwc-white); font-size: 1.5rem;"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900">발표 평가</h3>
+                        <div style="flex: 1;">
+                            <h3 class="pwc-card-title" style="margin-bottom: var(--spacing-sm);">발표 평가</h3>
+                            <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-md); word-break: keep-all;">STT + 음성 분석 기반 발표 평가</p>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm mb-4">STT + 음성 분석 기반 발표 평가</p>
-                    <ul class="text-xs text-gray-500 space-y-1">
-                        <li>• 실시간 음성 인식</li>
-                        <li>• 발표 내용 6지표 평가</li>
-                        <li>• 말속도·휴지·톤 분석</li>
+                    <ul style="list-style: none; color: var(--pwc-gray-600); font-size: 0.875rem; line-height: 1.6; padding-left: var(--spacing-lg);">
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                            실시간 음성 인식
+                        </li>
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                            발표 내용 6지표 평가
+                        </li>
+                        <li>
+                            <i class="fas fa-check" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                            말속도·휴지·톤 분석
+                        </li>
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/results'">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-red-100 p-3 rounded-full mr-4">
-                            <i class="fas fa-chart-radar text-red-600 text-xl"></i>
+                <div class="pwc-card" style="cursor: pointer;" onclick="window.location.href='/results'">
+                    <div class="pwc-flex" style="align-items: flex-start; margin-bottom: var(--spacing-lg);">
+                        <div style="background: linear-gradient(135deg, var(--pwc-navy), var(--pwc-navy-light)); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-right: var(--spacing-lg); min-width: 64px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-chart-radar" style="color: var(--pwc-white); font-size: 1.5rem;"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900">통합 결과</h3>
+                        <div style="flex: 1;">
+                            <h3 class="pwc-card-title" style="margin-bottom: var(--spacing-sm);">통합 결과</h3>
+                            <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-md); word-break: keep-all;">레이더 차트와 종합 피드백</p>
+                        </div>
                     </div>
-                    <p class="text-gray-600 text-sm mb-4">레이더 차트와 종합 피드백</p>
-                    <ul class="text-xs text-gray-500 space-y-1">
-                        <li>• 6각형 레이더 차트</li>
-                        <li>• 강점·보완·총평</li>
-                        <li>• PDF 결과 내보내기</li>
+                    <ul style="list-style: none; color: var(--pwc-gray-600); font-size: 0.875rem; line-height: 1.6; padding-left: var(--spacing-lg);">
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            6각형 레이더 차트
+                        </li>
+                        <li style="margin-bottom: var(--spacing-xs);">
+                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            강점·보완·총평
+                        </li>
+                        <li>
+                            <i class="fas fa-check" style="color: var(--pwc-navy); margin-right: var(--spacing-sm);"></i>
+                            PDF 결과 내보내기
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <!-- 시작하기 버튼 -->
-            <div class="text-center">
-                <button onclick="window.location.href='/customer-generation'" class="bg-primary hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-medium transition-colors">
-                    <i class="fas fa-play mr-2"></i>평가 시작하기
+            <div class="pwc-text-center">
+                <button onclick="window.location.href='/customer-generation'" class="pwc-btn pwc-btn-primary pwc-btn-lg">
+                    <i class="fas fa-play"></i>
+                    평가 시작하기
                 </button>
             </div>
-
-
-        </div>
+        </main>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script>
-            // 페이지 스크립트는 여기에 추가할 수 있습니다
-
-        </script>
     </body>
     </html>
   `)
@@ -899,49 +945,67 @@ app.get('/proposal-evaluation', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>제안서 평가 - RFP 평가 시뮬레이터</title>
-        <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-          body { font-family: 'Noto Sans KR', sans-serif; }
-        </style>
+        <link href="/static/pwc-global.css?v=3.0" rel="stylesheet">
     </head>
-    <body class="bg-gray-100 min-h-screen">
-        <!-- 헤더 -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <a href="/" class="text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-arrow-left text-xl"></i>
-                        </a>
-                        <h1 class="text-2xl font-bold text-gray-900">제안서 평가</h1>
-                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">2단계</span>
+    <body>
+        <!-- PwC 스타일 헤더 -->
+        <header class="pwc-header">
+            <div class="pwc-container">
+                <h1>
+                    <a href="/" style="color: var(--pwc-white); text-decoration: none; margin-right: var(--spacing-lg); display: inline-flex; align-items: center;">
+                        <i class="fas fa-arrow-left" style="margin-right: var(--spacing-sm);"></i>
+                    </a>
+                    <div class="pwc-logo">
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                </div>
+                    제안서 평가
+                    <span style="background-color: var(--pwc-success); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-md); border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-left: var(--spacing-lg);">2단계</span>
+                </h1>
+                <p style="color: var(--pwc-gray-200); margin-top: var(--spacing-sm); font-size: 1rem;">
+                    AI 가상고객 기반 6대 지표 루브릭 평가 (100점 만점)
+                </p>
             </div>
         </header>
 
-        <div class="container mx-auto px-4 py-8">
+        <!-- 네비게이션 -->
+        <nav class="pwc-nav">
+            <div class="pwc-container">
+                <ul class="pwc-nav-list">
+                    <li class="pwc-nav-item"><a href="/">홈</a></li>
+                    <li class="pwc-nav-item"><a href="/customer-generation">AI 가상고객</a></li>
+                    <li class="pwc-nav-item"><a href="/proposal-evaluation" class="active">제안서 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/presentation-evaluation">발표 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/results">통합 결과</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
             <!-- AI 가상고객 선택 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-user-circle mr-2 text-blue-600"></i>AI 가상고객 선택
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-user-circle" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        AI 가상고객 선택
+                    </h2>
+                    <p class="pwc-card-subtitle">평가할 AI 가상고객을 선택해주세요. 딥리서치와 RFP 분석으로 생성된 30속성 페르소나입니다.</p>
+                </div>
                 
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">평가할 AI 가상고객</label>
-                        <select id="customer-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                            <option value="">AI 가상고객을 선택하세요</option>
-                        </select>
-                    </div>
+                <div class="pwc-form-group">
+                    <label class="pwc-label">평가할 AI 가상고객</label>
+                    <select id="customer-select" class="pwc-select">
+                        <option value="">AI 가상고객을 선택하세요</option>
+                    </select>
                 </div>
 
                 <!-- 선택된 고객 정보 표시 -->
-                <div id="selected-customer-info" class="hidden mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h3 class="font-medium text-blue-900 mb-2">선택된 AI 가상고객</h3>
-                    <div id="customer-details" class="text-sm text-blue-800">
+                <div id="selected-customer-info" class="pwc-alert pwc-alert-info" style="display: none; margin-top: var(--spacing-lg);">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-sm); word-break: keep-all;">
+                        <i class="fas fa-check-circle" style="color: var(--pwc-blue); margin-right: var(--spacing-xs);"></i>
+                        선택된 AI 가상고객
+                    </h4>
+                    <div id="customer-details" style="font-size: 0.9rem; line-height: 1.5; word-break: keep-all;">
                         <!-- 동적으로 채워짐 -->
                     </div>
                 </div>
