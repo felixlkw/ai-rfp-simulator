@@ -1021,145 +1021,165 @@ app.get('/proposal-evaluation', (c) => {
             </div>
 
             <!-- 제안서 업로드 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-file-upload mr-2 text-green-600"></i>제안서 업로드
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-file-upload" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                        제안서 업로드
+                    </h2>
+                    <p class="pwc-card-subtitle">평가할 제안서를 업로드하거나 데모 제안서를 사용하세요. PDF, DOCX, TXT 형식을 지원합니다.</p>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">제안서 제목</label>
-                        <input type="text" id="proposal-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" 
+                <div class="pwc-grid pwc-grid-2">
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">제안서 제목</label>
+                        <input type="text" id="proposal-title" class="pwc-input" 
                                placeholder="예: 금고석유화학 DX 전략 수립 및 실행">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">제안사명</label>
-                        <input type="text" id="proposal-company" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">제안사명</label>
+                        <input type="text" id="proposal-company" class="pwc-input"
                                placeholder="예: PwC 컨설팅">
                     </div>
                 </div>
 
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="proposal-drop-zone">
-                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-lg font-medium text-gray-700 mb-2">제안서 파일을 업로드하세요</p>
-                    <p class="text-gray-500 mb-4">PDF, DOCX, TXT 형식 지원 (최대 50MB)</p>
-                    <input type="file" id="proposal-file" accept=".pdf,.docx,.txt" class="hidden">
-                    <div class="flex justify-center space-x-4">
-                        <button onclick="document.getElementById('proposal-file').click()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors">
+                <div class="pwc-file-upload" id="proposal-drop-zone" style="margin: var(--spacing-lg) 0;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--pwc-gray-400); margin-bottom: var(--spacing-lg);"></i>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--pwc-navy); margin-bottom: var(--spacing-sm); word-break: keep-all;">제안서 파일을 업로드하세요</h4>
+                    <p style="color: var(--pwc-gray-600); margin-bottom: var(--spacing-lg); word-break: keep-all;">PDF, DOCX, TXT 형식 지원 (최대 50MB)</p>
+                    <input type="file" id="proposal-file" accept=".pdf,.docx,.txt" style="display: none;">
+                    <div class="pwc-flex pwc-flex-center pwc-flex-mobile-col" style="gap: var(--spacing-md);">
+                        <button onclick="document.getElementById('proposal-file').click()" class="pwc-btn pwc-btn-primary">
+                            <i class="fas fa-folder-open"></i>
                             파일 선택
                         </button>
-                        <button id="demo-proposal-load" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md transition-colors">
-                            <i class="fas fa-rocket mr-2"></i>데모 제안서 로드
+                        <button id="demo-proposal-load" class="pwc-btn pwc-btn-secondary">
+                            <i class="fas fa-rocket"></i>
+                            데모 제안서 로드
                         </button>
                     </div>
                 </div>
 
                 <!-- 업로드된 파일 정보 -->
-                <div id="uploaded-file-info" class="hidden mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-                    <h3 class="font-medium text-green-900 mb-2">업로드된 제안서</h3>
-                    <div id="file-details" class="text-sm text-green-800">
+                <div id="uploaded-file-info" class="pwc-alert pwc-alert-success" style="display: none; margin-top: var(--spacing-lg);">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-sm); word-break: keep-all;">
+                        <i class="fas fa-check-circle" style="margin-right: var(--spacing-xs);"></i>
+                        업로드된 제안서
+                    </h4>
+                    <div id="file-details" style="font-size: 0.9rem; line-height: 1.5; word-break: keep-all;">
                         <!-- 동적으로 채워짐 -->
                     </div>
                 </div>
             </div>
 
             <!-- 평가 진행 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-clipboard-check mr-2 text-purple-600"></i>6대 지표 평가
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-clipboard-check" style="color: var(--pwc-blue); margin-right: var(--spacing-sm);"></i>
+                        6대 지표 평가
+                    </h2>
+                    <p class="pwc-card-subtitle">전문성, 논리성, 창의성 등 6가지 핵심 지표로 AI가 100점 만점으로 평가합니다.</p>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600">명확성</div>
-                        <div class="text-sm text-gray-600">목적·범위·효과의 명확성</div>
+                <div class="pwc-grid pwc-grid-3" style="margin-bottom: var(--spacing-xl);">
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-blue); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(0, 115, 230, 0.05), rgba(0, 115, 230, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-blue); margin-bottom: var(--spacing-sm); word-break: keep-all;">명확성</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">목적·범위·효과의 명확성</div>
                     </div>
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-green-600">전문성</div>
-                        <div class="text-sm text-gray-600">실무 지식의 깊이와 정확성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-success); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(0, 166, 81, 0.05), rgba(0, 166, 81, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-success); margin-bottom: var(--spacing-sm); word-break: keep-all;">전문성</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">실무 지식의 깊이와 정확성</div>
                     </div>
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-yellow-600">설득력</div>
-                        <div class="text-sm text-gray-600">고객 관점 이해와 설득 논리</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-warning); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(255, 184, 0, 0.05), rgba(255, 184, 0, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-warning); margin-bottom: var(--spacing-sm); word-break: keep-all;">설득력</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">고객 관점 이해와 설득 논리</div>
                     </div>
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-indigo-600">논리성</div>
-                        <div class="text-sm text-gray-600">추론의 타당성과 근거 체계성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-navy); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(0, 51, 102, 0.05), rgba(0, 51, 102, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-navy); margin-bottom: var(--spacing-sm); word-break: keep-all;">논리성</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">추론의 타당성과 근거 체계성</div>
                     </div>
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-pink-600">창의성</div>
-                        <div class="text-sm text-gray-600">차별화된 접근법과 혁신성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-orange); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(255, 121, 0, 0.05), rgba(255, 121, 0, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-orange); margin-bottom: var(--spacing-sm); word-break: keep-all;">창의성</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">차별화된 접근법과 혁신성</div>
                     </div>
-                    <div class="text-center p-4 border rounded-lg">
-                        <div class="text-2xl font-bold text-red-600">신뢰성</div>
-                        <div class="text-sm text-gray-600">실현 가능성과 객관적 근거</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); border: 2px solid var(--pwc-error); border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(230, 0, 18, 0.05), rgba(230, 0, 18, 0.02));">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--pwc-error); margin-bottom: var(--spacing-sm); word-break: keep-all;">신뢰성</div>
+                        <div style="font-size: 0.875rem; color: var(--pwc-gray-600); word-break: keep-all;">실현 가능성과 객관적 근거</div>
                     </div>
                 </div>
 
-                <button id="start-evaluation" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg text-lg font-medium transition-colors disabled:bg-gray-400" disabled>
-                    <i class="fas fa-play mr-2"></i>AI 평가 시작
+                <button id="start-evaluation" class="pwc-btn pwc-btn-primary" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-lg) var(--spacing-xl);" disabled>
+                    <i class="fas fa-play"></i>
+                    AI 평가 시작
                 </button>
             </div>
 
             <!-- 평가 결과 -->
-            <div id="evaluation-results" class="hidden bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-chart-line mr-2 text-green-600"></i>평가 결과
-                </h2>
+            <div id="evaluation-results" class="pwc-card" style="display: none;">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-chart-line" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                        평가 결과
+                    </h2>
+                    <p class="pwc-card-subtitle">AI가 6대 지표로 분석한 100점 만점 평가 결과입니다.</p>
+                </div>
 
                 <!-- 점수 차트 -->
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-600" id="clarity-score">-</div>
-                        <div class="text-sm font-medium text-blue-800">명확성</div>
+                <div class="pwc-grid pwc-grid-3" style="margin-bottom: var(--spacing-xl);">
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(0, 115, 230, 0.1), rgba(0, 115, 230, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(0, 115, 230, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-blue); margin-bottom: var(--spacing-xs);" id="clarity-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-blue); word-break: keep-all;">명확성</div>
                     </div>
-                    <div class="text-center p-4 bg-green-50 rounded-lg">
-                        <div class="text-3xl font-bold text-green-600" id="expertise-score">-</div>
-                        <div class="text-sm font-medium text-green-800">전문성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(0, 166, 81, 0.1), rgba(0, 166, 81, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(0, 166, 81, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-success); margin-bottom: var(--spacing-xs);" id="expertise-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-success); word-break: keep-all;">전문성</div>
                     </div>
-                    <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                        <div class="text-3xl font-bold text-yellow-600" id="persuasiveness-score">-</div>
-                        <div class="text-sm font-medium text-yellow-800">설득력</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(255, 184, 0, 0.1), rgba(255, 184, 0, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(255, 184, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-warning); margin-bottom: var(--spacing-xs);" id="persuasiveness-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-warning); word-break: keep-all;">설득력</div>
                     </div>
-                    <div class="text-center p-4 bg-indigo-50 rounded-lg">
-                        <div class="text-3xl font-bold text-indigo-600" id="logic-score">-</div>
-                        <div class="text-sm font-medium text-indigo-800">논리성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(0, 51, 102, 0.1), rgba(0, 51, 102, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(0, 51, 102, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-navy); margin-bottom: var(--spacing-xs);" id="logic-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-navy); word-break: keep-all;">논리성</div>
                     </div>
-                    <div class="text-center p-4 bg-pink-50 rounded-lg">
-                        <div class="text-3xl font-bold text-pink-600" id="creativity-score">-</div>
-                        <div class="text-sm font-medium text-pink-800">창의성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(255, 121, 0, 0.1), rgba(255, 121, 0, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(255, 121, 0, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-orange); margin-bottom: var(--spacing-xs);" id="creativity-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-orange); word-break: keep-all;">창의성</div>
                     </div>
-                    <div class="text-center p-4 bg-red-50 rounded-lg">
-                        <div class="text-3xl font-bold text-red-600" id="credibility-score">-</div>
-                        <div class="text-sm font-medium text-red-800">신뢰성</div>
+                    <div style="text-align: center; padding: var(--spacing-lg); background: linear-gradient(135deg, rgba(230, 0, 18, 0.1), rgba(230, 0, 18, 0.05)); border-radius: var(--radius-lg); border: 1px solid rgba(230, 0, 18, 0.2);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--pwc-error); margin-bottom: var(--spacing-xs);" id="credibility-score">-</div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--pwc-error); word-break: keep-all;">신뢰성</div>
                     </div>
                 </div>
 
                 <!-- 총점 -->
-                <div class="text-center p-6 bg-gray-50 rounded-lg mb-8">
-                    <div class="text-4xl font-bold text-gray-900" id="total-score">-</div>
-                    <div class="text-lg text-gray-600">총점 (100점 만점)</div>
+                <div style="text-align: center; padding: var(--spacing-xl); background: linear-gradient(135deg, var(--pwc-navy), var(--pwc-navy-light)); border-radius: var(--radius-lg); margin-bottom: var(--spacing-xl); color: var(--pwc-white);">
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: var(--spacing-sm);" id="total-score">-</div>
+                    <div style="font-size: 1.125rem; opacity: 0.9; word-break: keep-all;">총점 (100점 만점)</div>
                 </div>
 
                 <!-- 상세 코멘트 -->
-                <div class="space-y-4 mb-8">
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h4 class="font-medium text-gray-900 mb-2">종합 평가</h4>
-                        <p id="overall-comment" class="text-gray-700">-</p>
-                    </div>
+                <div class="pwc-alert pwc-alert-info" style="margin-bottom: var(--spacing-xl);">
+                    <h4 style="font-weight: 600; margin-bottom: var(--spacing-sm); word-break: keep-all;">
+                        <i class="fas fa-comments" style="margin-right: var(--spacing-xs);"></i>
+                        종합 평가
+                    </h4>
+                    <p id="overall-comment" style="line-height: 1.6; word-break: keep-all;">-</p>
                 </div>
 
                 <!-- 다음 단계 버튼 -->
-                <div class="text-center">
-                    <button onclick="window.location.href='/presentation-evaluation'" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors">
-                        <i class="fas fa-microphone mr-2"></i>발표 평가 시작
+                <div class="pwc-text-center">
+                    <button onclick="window.location.href='/presentation-evaluation'" class="pwc-btn pwc-btn-primary pwc-btn-lg">
+                        <i class="fas fa-microphone"></i>
+                        발표 평가 시작
                     </button>
                 </div>
             </div>
-        </div>
+        </main>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/proposal-evaluation.js"></script>
+        <script src="/static/proposal-evaluation.js?v=3.0"></script>
     </body>
     </html>
   `)
@@ -1174,16 +1194,35 @@ app.get('/customer-generation', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI 가상고객 생성 - RFP 평가 시뮬레이터</title>
-        <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-          body { font-family: 'Noto Sans KR', sans-serif; }
-        </style>
+        <link href="/static/pwc-global.css?v=3.0" rel="stylesheet">
     </head>
-    <body class="bg-gray-100 min-h-screen">
-        <div id="customer-generation-app" class="container mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-8">AI 가상고객 생성</h1>
+    <body>
+        <header class="pwc-header">
+            <div class="pwc-container">
+                <h1>
+                    <a href="/" style="color: var(--pwc-white); text-decoration: none; margin-right: var(--spacing-lg);">
+                        <i class="fas fa-arrow-left" style="margin-right: var(--spacing-sm);"></i>
+                    </a>
+                    <div class="pwc-logo"><i class="fas fa-user-plus"></i></div>
+                    AI 가상고객 생성
+                    <span style="background-color: var(--pwc-orange); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-md); border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-left: var(--spacing-lg);">1단계</span>
+                </h1>
+            </div>
+        </header>
+        <nav class="pwc-nav">
+            <div class="pwc-container">
+                <ul class="pwc-nav-list">
+                    <li class="pwc-nav-item"><a href="/">홈</a></li>
+                    <li class="pwc-nav-item"><a href="/customer-generation" class="active">AI 가상고객</a></li>
+                    <li class="pwc-nav-item"><a href="/proposal-evaluation">제안서 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/presentation-evaluation">발표 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/results">통합 결과</a></li>
+                </ul>
+            </div>
+        </nav>
+        <main class="pwc-container" style="padding-top: var(--spacing-xl);">
+            <div id="customer-generation-app">
             
             <!-- 진행 단계 표시 -->
             <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -1293,11 +1332,9 @@ app.get('/presentation-evaluation', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>발표 평가 - RFP 평가 시뮬레이터</title>
-        <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/pwc-global.css?v=3.0" rel="stylesheet">
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-          body { font-family: 'Noto Sans KR', sans-serif; }
           .recording { 
             animation: pulse 1.5s ease-in-out infinite alternate;
           }
@@ -1307,54 +1344,77 @@ app.get('/presentation-evaluation', (c) => {
           }
         </style>
     </head>
-    <body class="bg-gray-100 min-h-screen">
-        <!-- 헤더 -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <a href="/proposal-evaluation" class="text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-arrow-left text-xl"></i>
-                        </a>
-                        <h1 class="text-2xl font-bold text-gray-900">발표 평가</h1>
-                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">3단계</span>
+    <body>
+        <!-- PwC 스타일 헤더 -->
+        <header class="pwc-header">
+            <div class="pwc-container">
+                <h1>
+                    <a href="/proposal-evaluation" style="color: var(--pwc-white); text-decoration: none; margin-right: var(--spacing-lg); display: inline-flex; align-items: center;">
+                        <i class="fas fa-arrow-left" style="margin-right: var(--spacing-sm);"></i>
+                    </a>
+                    <div class="pwc-logo">
+                        <i class="fas fa-microphone"></i>
                     </div>
-                </div>
+                    발표 평가
+                    <span style="background-color: var(--pwc-blue); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-md); border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-left: var(--spacing-lg);">3단계</span>
+                </h1>
+                <p style="color: var(--pwc-gray-200); margin-top: var(--spacing-sm); font-size: 1rem;">
+                    WebRTC + STT 기반 실시간 발표 녹화 및 AI 평가
+                </p>
             </div>
         </header>
 
-        <div class="container mx-auto px-4 py-8">
+        <!-- 네비게이션 -->
+        <nav class="pwc-nav">
+            <div class="pwc-container">
+                <ul class="pwc-nav-list">
+                    <li class="pwc-nav-item"><a href="/">홈</a></li>
+                    <li class="pwc-nav-item"><a href="/customer-generation">AI 가상고객</a></li>
+                    <li class="pwc-nav-item"><a href="/proposal-evaluation">제안서 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/presentation-evaluation" class="active">발표 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/results">통합 결과</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
             <!-- AI 가상고객 선택 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-user-circle mr-2 text-blue-600"></i>AI 가상고객 선택
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-user-circle" style="color: var(--pwc-orange); margin-right: var(--spacing-sm);"></i>
+                        AI 가상고객 선택
+                    </h2>
+                    <p class="pwc-card-subtitle">발표를 평가할 AI 가상고객을 선택해주세요.</p>
+                </div>
                 
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">평가할 AI 가상고객</label>
-                        <select id="customer-select" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
-                            <option value="">AI 가상고객을 선택하세요</option>
-                        </select>
-                    </div>
+                <div class="pwc-form-group">
+                    <label class="pwc-label">평가할 AI 가상고객</label>
+                    <select id="customer-select" class="pwc-select">
+                        <option value="">AI 가상고객을 선택하세요</option>
+                    </select>
                 </div>
             </div>
 
             <!-- 발표 설정 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-cog mr-2 text-green-600"></i>발표 설정
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-cog" style="color: var(--pwc-success); margin-right: var(--spacing-sm);"></i>
+                        발표 설정
+                    </h2>
+                    <p class="pwc-card-subtitle">발표 제목과 예상 시간을 설정해주세요.</p>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">발표 제목</label>
-                        <input type="text" id="presentation-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500" 
+                <div class="pwc-grid pwc-grid-2">
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">발표 제목</label>
+                        <input type="text" id="presentation-title" class="pwc-input" 
                                placeholder="예: 금고석유화학 DX 플랫폼 구축 제안">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">예상 발표 시간 (분)</label>
-                        <select id="presentation-duration" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500">
+                    <div class="pwc-form-group">
+                        <label class="pwc-label">예상 발표 시간 (분)</label>
+                        <select id="presentation-duration" class="pwc-select">
                             <option value="5">5분</option>
                             <option value="10" selected>10분</option>
                             <option value="15">15분</option>
@@ -1365,10 +1425,14 @@ app.get('/presentation-evaluation', (c) => {
             </div>
 
             <!-- 녹화 섹션 -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-video mr-2 text-red-600"></i>발표 녹화
-                </h2>
+            <div class="pwc-card">
+                <div class="pwc-card-header">
+                    <h2 class="pwc-card-title">
+                        <i class="fas fa-video" style="color: var(--pwc-error); margin-right: var(--spacing-sm);"></i>
+                        발표 녹화
+                    </h2>
+                    <p class="pwc-card-subtitle">WebRTC를 이용한 실시간 발표 녹화 및 음성 분석을 진행합니다.</p>
+                </div>
 
                 <!-- 미디어 접근 권한 요청 -->
                 <div id="media-setup" class="text-center py-8">
@@ -1537,31 +1601,36 @@ app.get('/results', (c) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>통합 결과 - RFP 평가 시뮬레이터</title>
-        <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/pwc-global.css?v=3.0" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-          body { font-family: 'Noto Sans KR', sans-serif; }
-        </style>
     </head>
-    <body class="bg-gray-100 min-h-screen">
-        <!-- 헤더 -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <a href="/presentation-evaluation" class="text-blue-600 hover:text-blue-700">
-                            <i class="fas fa-arrow-left text-xl"></i>
-                        </a>
-                        <h1 class="text-2xl font-bold text-gray-900">통합 결과</h1>
-                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">완료</span>
-                    </div>
-                </div>
+    <body>
+        <header class="pwc-header">
+            <div class="pwc-container">
+                <h1>
+                    <a href="/presentation-evaluation" style="color: var(--pwc-white); text-decoration: none; margin-right: var(--spacing-lg);">
+                        <i class="fas fa-arrow-left" style="margin-right: var(--spacing-sm);"></i>
+                    </a>
+                    <div class="pwc-logo"><i class="fas fa-chart-line"></i></div>
+                    통합 결과
+                    <span style="background-color: var(--pwc-success); color: var(--pwc-white); padding: var(--spacing-xs) var(--spacing-md); border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-left: var(--spacing-lg);">완료</span>
+                </h1>
             </div>
         </header>
+        <nav class="pwc-nav">
+            <div class="pwc-container">
+                <ul class="pwc-nav-list">
+                    <li class="pwc-nav-item"><a href="/">홈</a></li>
+                    <li class="pwc-nav-item"><a href="/customer-generation">AI 가상고객</a></li>
+                    <li class="pwc-nav-item"><a href="/proposal-evaluation">제안서 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/presentation-evaluation">발표 평가</a></li>
+                    <li class="pwc-nav-item"><a href="/results" class="active">통합 결과</a></li>
+                </ul>
+            </div>
+        </nav>
 
-        <div class="container mx-auto px-4 py-8">
+        <main class="pwc-container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-3xl);">
             <!-- 종합 점수 -->
             <div class="bg-white rounded-lg shadow-sm p-6 mb-8 text-center">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">최종 종합 점수</h2>
