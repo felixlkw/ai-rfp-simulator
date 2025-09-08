@@ -145,10 +145,50 @@ GET /api/data                             # 전체 데이터 목록
 3. 종합 평가 및 개선 권장사항 생성
 
 ## 🎯 배포 상태
+
+### Cloudflare Pages (Edge Runtime)
 - **플랫폼**: Cloudflare Pages (Workers Unbound)
 - **상태**: ✅ 개발 환경 활성화
-- **마지막 업데이트**: 2024-09-07
+- **URL**: https://fddef368.ai-rfp-simulator-v2.pages.dev
+- **마지막 업데이트**: 2024-09-08
 - **빌드 상태**: ✅ 성공
+
+### Railway (Docker/Node.js)
+- **플랫폼**: Railway (Docker + Node.js)
+- **상태**: 🟡 배포 준비 완료
+- **설정 파일**: `Dockerfile`, `railway.json`, `server.js`
+- **빌드 방식**: Docker 기반 자동 배포
+
+## 🚀 Railway 배포 가이드
+
+### 1. 필수 환경 변수 설정
+Railway 대시보드에서 다음 변수들을 설정하세요:
+```bash
+OPENAI_API_KEY=your-openai-api-key-here
+NODE_ENV=production
+```
+
+### 2. 자동 배포 설정
+```bash
+# Railway CLI 설치 및 로그인
+npm install -g @railway/cli
+railway login
+
+# 프로젝트 연결 및 배포
+railway link
+railway up
+```
+
+### 3. 로컬 테스트
+```bash
+# Railway 환경 변수로 로컬 테스트
+railway run npm run build
+railway run npm start
+```
+
+### 4. 배포 후 확인
+- Health check: `https://your-app.railway.app/api/health`
+- 모든 API 엔드포인트 정상 동작 확인
 
 ## 🧪 테스트 결과
 

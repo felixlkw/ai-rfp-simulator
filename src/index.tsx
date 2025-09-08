@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { serveStatic } from 'hono/cloudflare-workers'
 
 // 유틸리티 및 서비스 임포트
 import { DeepResearchService } from './services/deep-research'
@@ -40,8 +39,13 @@ const app = new Hono<{ Bindings: Bindings }>()
 // CORS 설정
 app.use('/api/*', cors())
 
-// 정적 파일 서빙
-app.use('/static/*', serveStatic({ root: './public' }))
+// 정적 파일 서빙 (Cloudflare Workers 환경에서만)
+// Railway에서는 server.js에서 Node.js 방식으로 처리
+if (typeof globalThis.process === 'undefined') {
+  // Cloudflare Workers 환경
+  const { serveStatic } = await import('hono/cloudflare-workers')
+  app.use('/static/*', serveStatic({ root: './public' }))
+}
 
 // === 헬퍼 함수들 ===
 
